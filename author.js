@@ -1,5 +1,7 @@
 
-// author.js
+// ==============================
+// Pocket Classroom - author.js
+// ==============================
 
 // المان‌ها
 const titleInput = document.getElementById("titleInput");
@@ -13,25 +15,32 @@ const quizList = document.getElementById("quizList");
 const addQuestionBtn = document.getElementById("addQuestionBtn");
 const saveCapsuleBtn = document.getElementById("saveCapsuleBtn");
 
+// ==============================
 // نمایش کپسول در فرم
+// ==============================
 function loadAuthorForm() {
   if(!currentCapsule) return;
-  titleInput.value = currentCapsule.title;
-  subjectInput.value = currentCapsule.subject;
-  levelInput.value = currentCapsule.level;
-  descInput.value = currentCapsule.description;
-  notesInput.value = currentCapsule.notes.join("\n");
+
+  titleInput.value = currentCapsule.title || "";
+  subjectInput.value = currentCapsule.subject || "";
+  levelInput.value = currentCapsule.level || "Beginner";
+  descInput.value = currentCapsule.description || "";
+  notesInput.value = currentCapsule.notes ? currentCapsule.notes.join("\n") : "";
 
   renderFlashcards();
   renderQuiz();
 }
 
+// ==============================
 // Flashcards
+// ==============================
 function renderFlashcards() {
   flashcardsList.innerHTML = "";
-  currentCapsule.flashcards.forEach((f, i)=>{
+  if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
+
+  currentCapsule.flashcards.forEach((f, i) => {
     const div = document.createElement("div");
-    div.className = "list-group-item d-flex gap-2 align-items-center";
+    div.className = "list-group-item d-flex gap-2 align-items-center mb-1";
     div.innerHTML = `
       <input type="text" class="form-control form-control-sm frontInput" value="${escapeHTML(f.front)}" placeholder="Front">
       <input type="text" class="form-control form-control-sm backInput" value="${escapeHTML(f.back)}" placeholder="Back">
@@ -39,17 +48,21 @@ function renderFlashcards() {
     `;
     flashcardsList.appendChild(div);
 
-    div.querySelector(".delFlashBtn").addEventListener("click", ()=>{
+    div.querySelector(".delFlashBtn").addEventListener("click", () => {
       currentCapsule.flashcards.splice(i,1);
       renderFlashcards();
     });
   });
 }
 
+// ==============================
 // Quiz
+// ==============================
 function renderQuiz() {
   quizList.innerHTML = "";
-  currentCapsule.quiz.forEach((q,i)=>{
+  if(!currentCapsule.quiz) currentCapsule.quiz = [];
+
+  currentCapsule.quiz.forEach((q, i) => {
     const div = document.createElement("div");
     div.className = "list-group-item mb-2";
     div.innerHTML = `
@@ -72,20 +85,26 @@ function renderQuiz() {
   });
 }
 
+// ==============================
 // دکمه‌ها
+// ==============================
 addFlashcardBtn.addEventListener("click", ()=>{
-  currentCapsule.flashcards.push({front:"",back:""});
+  if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
+  currentCapsule.flashcards.push({front:"", back:""});
   renderFlashcards();
 });
 
 addQuestionBtn.addEventListener("click", ()=>{
-  currentCapsule.quiz.push({question:"",choices:["","","",""],answer:0,explanation:""});
+  if(!currentCapsule.quiz) currentCapsule.quiz = [];
+  currentCapsule.quiz.push({question:"", choices:["","","",""], answer:0, explanation:""});
   renderQuiz();
 });
 
 saveCapsuleBtn.addEventListener("click", ()=>{
   if(!currentCapsule) return;
-  currentCapsule.title = titleInput.value.trim() || currentCapsule.title;
+
+  // Update currentCapsule
+  currentCapsule.title = titleInput.value.trim();
   currentCapsule.subject = subjectInput.value.trim();
   currentCapsule.level = levelInput.value;
   currentCapsule.description = descInput.value.trim();
@@ -107,12 +126,23 @@ saveCapsuleBtn.addEventListener("click", ()=>{
     currentCapsule.quiz[i] = {question, choices, answer, explanation};
   });
 
-  // ذخیره و رندر مجدد
+  // ذخیره در LocalStorage
   saveCapsules();
-  renderLibrary(searchCapsule.value);
-  populateLearnSelector();
+  localStorage.setItem("pc_lastCapsule", currentCapsule.id);
+
   alert("Capsule saved!");
+
+  // Refresh فرم و Learn Mode
+  if(typeof loadAuthorForm === "function") loadAuthorForm();
+  if(typeof updateLearnMode === "function") updateLearnMode();
 });
 
-// رندر فرم هنگام انتخاب کپسول
-document.addEventListener("DOMContentLoaded", loadAuthorForm);
+// ==============================
+// Helper: Escape HTML
+// ==============================
+function escapeHTML(str) {
+  if(!str) return "";
+  return str.replace(/[&<>"']/g, function(m) {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+  });
+}
