@@ -1,11 +1,15 @@
 
+// ===============================
+// Pocket Classroom - Library JS
+// ===============================
+
 const capsuleGrid = document.getElementById("capsuleGrid");
 const newCapsuleBtn = document.getElementById("newCapsuleBtn");
 const learnSelector = document.getElementById("learnSelector");
 const searchCapsule = document.getElementById("searchCapsule");
 
 // Render Library
-function renderLibrary(filter="") {
+function renderLibrary(filter = "") {
   capsuleGrid.innerHTML = "";
   capsules
     .filter(c => c.title.toLowerCase().includes(filter.toLowerCase()))
@@ -31,14 +35,14 @@ function renderLibrary(filter="") {
 
       // Learn button
       div.querySelector(".learnBtn").addEventListener("click", () => {
-        selectCapsule(c.id);
-        window.scrollTo({top: document.getElementById("learn").offsetTop - 70, behavior: "smooth"});
+        setCurrentCapsule(c.id);
+        showSection(learnSection);
       });
 
       // Edit button
       div.querySelector(".editBtn").addEventListener("click", () => {
-        selectCapsule(c.id);
-        window.scrollTo({top: document.getElementById("author").offsetTop - 70, behavior: "smooth"});
+        setCurrentCapsule(c.id);
+        showSection(authorSection);
       });
 
       // Delete button
@@ -47,7 +51,6 @@ function renderLibrary(filter="") {
           capsules = capsules.filter(cp => cp.id !== c.id);
           saveCapsules();
           renderLibrary(searchCapsule.value);
-          populateLearnSelector();
         }
       });
   });
@@ -58,48 +61,42 @@ function populateLearnSelector() {
   learnSelector.innerHTML = "";
   capsules.forEach(c => {
     const opt = document.createElement("option");
-    opt.value = c.id; // ✅ بر اساس id
-    opt.innerText = c.title;
+    opt.value = c.id;
+    opt.textContent = c.title;
     learnSelector.appendChild(opt);
   });
-}
 
-// Select Capsule
-function selectCapsule(id) {
-  currentCapsule = capsules.find(c => c.id === id);
-  updateLearnMode();
+  if (capsules.length > 0) {
+    const selectedId = currentCapsule ? currentCapsule.id : capsules[0].id;
+    learnSelector.value = selectedId;
+  }
 }
 
 // New Capsule
 newCapsuleBtn.addEventListener("click", () => {
-  const title = prompt("Enter new capsule title:");
-  if (!title) return;
-  const subject = prompt("Enter subject:") || "General";
-  const level = prompt("Enter level (Beginner/Intermediate/Advanced):") || "Beginner";
-  const description = prompt("Enter description:") || "";
-
   const newCap = {
-    id: Date.now(), // ✅ id یکتا
-    title,
-    subject,
-    level,
-    description,
+    id: Date.now().toString(),
+    title: "New Capsule",
+    subject: "General",
+    level: "Beginner",
+    description: "",
     notes: [],
     flashcards: [],
     quiz: []
   };
-
   capsules.push(newCap);
+  currentCapsule = newCap;
   saveCapsules();
   renderLibrary();
   populateLearnSelector();
-  selectCapsule(newCap.id);
-  window.scrollTo({top: document.getElementById("author").offsetTop - 70, behavior: "smooth"});
+  showSection(authorSection);
 });
 
 // Search
 searchCapsule.addEventListener("input", debounce(() => renderLibrary(searchCapsule.value), 300));
 
 // Initial Render
-renderLibrary();
-populateLearnSelector();
+document.addEventListener("DOMContentLoaded", () => {
+  renderLibrary();
+  populateLearnSelector();
+});
