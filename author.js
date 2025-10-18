@@ -1,8 +1,7 @@
-// =============================
-// Author.js
-// =============================
 
-// HTML Elements
+// author.js
+
+// المان‌ها
 const titleInput = document.getElementById("titleInput");
 const subjectInput = document.getElementById("subjectInput");
 const levelInput = document.getElementById("levelInput");
@@ -14,115 +13,106 @@ const quizList = document.getElementById("quizList");
 const addQuestionBtn = document.getElementById("addQuestionBtn");
 const saveCapsuleBtn = document.getElementById("saveCapsuleBtn");
 
-// Update Author Form with current capsule
-function updateAuthorForm() {
-  if (!currentCapsule) return;
-
+// نمایش کپسول در فرم
+function loadAuthorForm() {
+  if(!currentCapsule) return;
   titleInput.value = currentCapsule.title;
   subjectInput.value = currentCapsule.subject;
   levelInput.value = currentCapsule.level;
-  descInput.value = currentCapsule.description || "";
-  notesInput.value = (currentCapsule.notes || []).join("\n");
+  descInput.value = currentCapsule.description;
+  notesInput.value = currentCapsule.notes.join("\n");
 
   renderFlashcards();
   renderQuiz();
 }
 
-// Render Flashcards list
+// Flashcards
 function renderFlashcards() {
   flashcardsList.innerHTML = "";
-  (currentCapsule.flashcards || []).forEach((fc, idx) => {
+  currentCapsule.flashcards.forEach((f, i)=>{
     const div = document.createElement("div");
-    div.className = "mb-2 d-flex gap-2";
+    div.className = "list-group-item d-flex gap-2 align-items-center";
     div.innerHTML = `
-      <input type="text" class="form-control form-control-sm front" placeholder="Front" value="${escapeHTML(fc.front)}">
-      <input type="text" class="form-control form-control-sm back" placeholder="Back" value="${escapeHTML(fc.back)}">
-      <button class="btn btn-danger btn-sm delFC"><i class="bi bi-trash"></i></button>
+      <input type="text" class="form-control form-control-sm frontInput" value="${escapeHTML(f.front)}" placeholder="Front">
+      <input type="text" class="form-control form-control-sm backInput" value="${escapeHTML(f.back)}" placeholder="Back">
+      <button class="btn btn-sm btn-danger delFlashBtn"><i class="bi bi-trash"></i></button>
     `;
     flashcardsList.appendChild(div);
 
-    div.querySelector(".delFC").addEventListener("click", () => {
-      currentCapsule.flashcards.splice(idx, 1);
+    div.querySelector(".delFlashBtn").addEventListener("click", ()=>{
+      currentCapsule.flashcards.splice(i,1);
       renderFlashcards();
     });
   });
 }
 
-// Add new Flashcard
-addFlashcardBtn.addEventListener("click", () => {
-  if (!currentCapsule) return;
-  currentCapsule.flashcards.push({ front: "", back: "" });
-  renderFlashcards();
-});
-
-// Render Quiz list
+// Quiz
 function renderQuiz() {
   quizList.innerHTML = "";
-  (currentCapsule.quiz || []).forEach((q, idx) => {
+  currentCapsule.quiz.forEach((q,i)=>{
     const div = document.createElement("div");
-    div.className = "mb-2 border p-2 rounded";
+    div.className = "list-group-item mb-2";
     div.innerHTML = `
-      <input type="text" class="form-control form-control-sm question mb-1" placeholder="Question" value="${escapeHTML(q.question)}">
-      <input type="text" class="form-control form-control-sm mb-1" placeholder="Choice A" value="${escapeHTML(q.choices[0] || "")}">
-      <input type="text" class="form-control form-control-sm mb-1" placeholder="Choice B" value="${escapeHTML(q.choices[1] || "")}">
-      <input type="text" class="form-control form-control-sm mb-1" placeholder="Choice C" value="${escapeHTML(q.choices[2] || "")}">
-      <input type="text" class="form-control form-control-sm mb-1" placeholder="Choice D" value="${escapeHTML(q.choices[3] || "")}">
-      <select class="form-select form-select-sm correct mb-1">
-        <option value="0" ${q.correct===0?"selected":""}>A</option>
-        <option value="1" ${q.correct===1?"selected":""}>B</option>
-        <option value="2" ${q.correct===2?"selected":""}>C</option>
-        <option value="3" ${q.correct===3?"selected":""}>D</option>
+      <input type="text" class="form-control form-control-sm questionInput mb-1" value="${escapeHTML(q.question)}" placeholder="Question">
+      <div class="d-flex gap-1 mb-1">
+        ${q.choices.map((c,j)=>`<input type="text" class="form-control form-control-sm choiceInput" data-index="${j}" value="${escapeHTML(c)}" placeholder="Choice ${j+1}">`).join("")}
+      </div>
+      <select class="form-select form-select-sm correctInput mb-1">
+        ${q.choices.map((_,j)=>`<option value="${j}" ${q.answer===j?"selected":""}>${j+1}</option>`).join("")}
       </select>
-      <button class="btn btn-danger btn-sm delQ"><i class="bi bi-trash"></i></button>
+      <textarea class="form-control form-control-sm explanationInput" placeholder="Explanation">${escapeHTML(q.explanation||"")}</textarea>
+      <button class="btn btn-sm btn-danger delQuizBtn mt-1"><i class="bi bi-trash"></i> Delete</button>
     `;
     quizList.appendChild(div);
 
-    div.querySelector(".delQ").addEventListener("click", () => {
-      currentCapsule.quiz.splice(idx, 1);
+    div.querySelector(".delQuizBtn").addEventListener("click", ()=>{
+      currentCapsule.quiz.splice(i,1);
       renderQuiz();
     });
   });
 }
 
-// Add new Quiz question
-addQuestionBtn.addEventListener("click", () => {
-  if (!currentCapsule) return;
-  currentCapsule.quiz.push({ question:"", choices:["","","",""], correct:0 });
+// دکمه‌ها
+addFlashcardBtn.addEventListener("click", ()=>{
+  currentCapsule.flashcards.push({front:"",back:""});
+  renderFlashcards();
+});
+
+addQuestionBtn.addEventListener("click", ()=>{
+  currentCapsule.quiz.push({question:"",choices:["","","",""],answer:0,explanation:""});
   renderQuiz();
 });
 
-// Save Capsule button
-saveCapsuleBtn.addEventListener("click", () => {
-  if (!currentCapsule) return;
-
-  // Update capsule data
+saveCapsuleBtn.addEventListener("click", ()=>{
+  if(!currentCapsule) return;
   currentCapsule.title = titleInput.value.trim() || currentCapsule.title;
-  currentCapsule.subject = subjectInput.value.trim() || "General";
+  currentCapsule.subject = subjectInput.value.trim();
   currentCapsule.level = levelInput.value;
   currentCapsule.description = descInput.value.trim();
-  currentCapsule.notes = notesInput.value.split("\n").map(n=>n.trim()).filter(n=>n);
-  currentCapsule.flashcards = Array.from(flashcardsList.children).map(div=>{
-    return {
-      front: div.querySelector(".front").value.trim(),
-      back: div.querySelector(".back").value.trim()
-    };
-  }).filter(fc=>fc.front || fc.back);
-  currentCapsule.quiz = Array.from(quizList.children).map(div=>{
-    const choices = Array.from(div.querySelectorAll("input")).map(i=>i.value.trim());
-    const correct = parseInt(div.querySelector(".correct").value);
-    return { question: div.querySelector(".question").value.trim(), choices, correct };
-  }).filter(q=>q.question || q.choices.some(c=>c));
+  currentCapsule.notes = notesInput.value.split("\n").map(s=>s.trim()).filter(Boolean);
 
-  currentCapsule.updatedAt = new Date().toISOString();
+  // Flashcards
+  flashcardsList.querySelectorAll(".list-group-item").forEach((div,i)=>{
+    const front = div.querySelector(".frontInput").value.trim();
+    const back = div.querySelector(".backInput").value.trim();
+    currentCapsule.flashcards[i] = {front, back};
+  });
 
+  // Quiz
+  quizList.querySelectorAll(".list-group-item").forEach((div,i)=>{
+    const question = div.querySelector(".questionInput").value.trim();
+    const choices = Array.from(div.querySelectorAll(".choiceInput")).map(inp=>inp.value.trim());
+    const answer = parseInt(div.querySelector(".correctInput").value);
+    const explanation = div.querySelector(".explanationInput").value.trim();
+    currentCapsule.quiz[i] = {question, choices, answer, explanation};
+  });
+
+  // ذخیره و رندر مجدد
   saveCapsules();
-  renderLibrary();
+  renderLibrary(searchCapsule.value);
   populateLearnSelector();
-
   alert("Capsule saved!");
 });
 
-// Update Author Form when capsule selected
-function updateAuthorMode() {
-  updateAuthorForm();
-}
+// رندر فرم هنگام انتخاب کپسول
+document.addEventListener("DOMContentLoaded", loadAuthorForm);
