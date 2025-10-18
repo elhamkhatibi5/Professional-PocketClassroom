@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Main JS (Fixed & SPA Ready)
+// Pocket Classroom - Main JS (Author & Learn Ready)
 // ===============================
 
 // Sections
@@ -24,21 +24,15 @@ let currentCapsule = capsules.length > 0 ? capsules[0] : null;
 // ===============================
 // SPA Section Control
 // ===============================
-function showSection(section, saveHash = true) {
+function showSection(section) {
   librarySection.style.display = "none";
   authorSection.style.display = "none";
   learnSection.style.display = "none";
   section.style.display = "block";
 
-  if (saveHash) {
-    if (section === librarySection) window.location.hash = "#library";
-    else if (section === authorSection) window.location.hash = "#author";
-    else if (section === learnSection) window.location.hash = "#learn";
-  }
-
   // Update UI after section change
   if (section === authorSection && typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
-  if (section === learnSection && typeof updateLearnMode === "function") updateLearnMode(currentCapsule);
+  if (section === learnSection && typeof updateLearnMode === "function") updateLearnMode();
 }
 
 // Navbar click
@@ -81,6 +75,11 @@ themeToggle.addEventListener("click", toggleTheme);
 // ===============================
 function saveCapsules() {
   localStorage.setItem("pc_capsules_index", JSON.stringify(capsules));
+
+  // Refresh UI after save
+  if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
+  if (typeof populateLearnSelector === "function") populateLearnSelector();
+  if (typeof updateLearnMode === "function") updateLearnMode();
 }
 
 function saveCapsule(capsule) {
@@ -89,60 +88,75 @@ function saveCapsule(capsule) {
   else capsules.push(capsule);
   saveCapsules();
   currentCapsule = capsule;
-
-  // Refresh UI
-  if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
-  if (typeof updateLearnMode === "function") updateLearnMode(currentCapsule);
 }
 
 // ===============================
-// Select Capsule
+// Set Current Capsule
 // ===============================
 function setCurrentCapsule(id) {
   const capsule = capsules.find(c => c.id === id);
   if (capsule) {
     currentCapsule = capsule;
     if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
-    if (typeof updateLearnMode === "function") updateLearnMode(currentCapsule);
+    if (typeof updateLearnMode === "function") updateLearnMode();
   }
 }
 
 // ===============================
-// Auto-load sample-capsule.json if empty
+// Export / Import
 // ===============================
-async function loadSampleCapsulesIfEmpty() {
-  const stored = localStorage.getItem("pc_capsules_index");
-  if (!stored || stored === "[]") {
-    try {
-      const res = await fetch("sample-capsule.json");
-      const data = await res.json();
+const exportBtn = document.getElementById("exportBtn");
+exportBtn.addEventListener("click", ()=>{
+  const dataStr = JSON.stringify({capsules}, null, 2);
+  const blob = new Blob([dataStr], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "capsules.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
-      if (data && Array.isArray(data.capsules)) {
-        localStorage.setItem("pc_capsules_index", JSON.stringify(data.capsules));
-        capsules = data.capsules;
-        currentCapsule = capsules[0];
-        console.log("✅ Loaded sample capsules successfully.");
-      }
-    } catch (err) {
-      console.error("❌ Failed to load sample-capsule.json:", err);
-    }
-  }
-}
+const importBtn = document.getElementById("importBtn");
+importBtn.addEventListener("click", ()=>{
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.addEventListener("change", e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if(imported.capsules && Array.isArray(imported.capsules)){
+          imported.capsules.forEach(c=>{
+            if(!c.id) c.id = Date.now().toString() + Math.random();
+            capsules.push(c);
+          });
+          saveCapsules();
+          alert("Capsules imported successfully!");
+        }
+      } catch(err){ alert("Invalid JSON file."); }
+    };
+    reader.readAsText(file);
+  });
+  input.click();
+});
 
 // ===============================
 // Initial Load
 // ===============================
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadSampleCapsulesIfEmpty();
-
-  const hash = window.location.hash;
-  if (hash === "#author") showSection(authorSection, false);
-  else if (hash === "#learn") showSection(learnSection, false);
-  else showSection(librarySection, false);
-
+document.addEventListener("DOMContentLoaded", ()=>{
   loadTheme();
 
-  // Update capsule references after loading
+  // Show section based on hash
+  const hash = window.location.hash;
+  if (hash === "#author") showSection(authorSection);
+  else if (hash === "#learn") showSection(learnSection);
+  else showSection(librarySection);
+
+  // Ensure capsules are loaded
   capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
   if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
 });
