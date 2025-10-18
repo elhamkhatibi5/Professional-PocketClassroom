@@ -1,6 +1,4 @@
 
-// author.js
-
 const $ = s => document.querySelector(s);
 
 // المان‌ها
@@ -20,38 +18,42 @@ const newCapsuleBtn = $("#newCapsuleBtn");
 const searchCapsule = $("#searchCapsule");
 
 let currentCapsule = null;
-let capsules = JSON.parse(localStorage.getItem("pc_capsules_index")||"[]");
+let capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
 
-function escapeHTML(str){
+// HTML escaping
+function escapeHTML(str) {
   return str.replace(/[&<>"']/g, c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
   })[c]);
 }
 
-function saveCapsules(){
+// Save capsules to LocalStorage
+function saveCapsules() {
   localStorage.setItem("pc_capsules_index", JSON.stringify(capsules));
+  // Update Learn Mode immediately
+  if (typeof populateLearnSelector === "function") populateLearnSelector();
 }
 
-// Load form
-function loadAuthorForm(){
-  if(!currentCapsule) return;
+// Load form with current capsule
+function loadAuthorForm() {
+  if (!currentCapsule) return;
   titleInput.value = currentCapsule.title || "";
   subjectInput.value = currentCapsule.subject || "";
   levelInput.value = currentCapsule.level || "Beginner";
   descInput.value = currentCapsule.description || "";
-  notesInput.value = (currentCapsule.notes||[]).join("\n");
+  notesInput.value = (currentCapsule.notes || []).join("\n");
   renderFlashcards();
   renderQuiz();
 }
 
 // Flashcards
-function renderFlashcards(){
+function renderFlashcards() {
   flashcardsList.innerHTML = "";
-  (currentCapsule.flashcards||[]).forEach((f,i)=>{
+  (currentCapsule.flashcards || []).forEach((f, i) => {
     const div = document.createElement("div");
     div.className = "list-group-item d-flex gap-2 align-items-center mb-1";
     div.innerHTML = `
@@ -61,17 +63,17 @@ function renderFlashcards(){
     `;
     flashcardsList.appendChild(div);
 
-    div.querySelector(".delFlashBtn").addEventListener("click",()=>{
-      currentCapsule.flashcards.splice(i,1);
+    div.querySelector(".delFlashBtn").addEventListener("click", () => {
+      currentCapsule.flashcards.splice(i, 1);
       renderFlashcards();
     });
   });
 }
 
 // Quiz
-function renderQuiz(){
+function renderQuiz() {
   quizList.innerHTML = "";
-  (currentCapsule.quiz||[]).forEach((q,i)=>{
+  (currentCapsule.quiz || []).forEach((q, i) => {
     const div = document.createElement("div");
     div.className = "list-group-item mb-2 p-2";
     div.innerHTML = `
@@ -87,7 +89,7 @@ function renderQuiz(){
     `;
     quizList.appendChild(div);
 
-    div.querySelector(".delQuizBtn").addEventListener("click",()=>{
+    div.querySelector(".delQuizBtn").addEventListener("click", ()=>{
       currentCapsule.quiz.splice(i,1);
       renderQuiz();
     });
@@ -95,27 +97,36 @@ function renderQuiz(){
 }
 
 // New Capsule
-newCapsuleBtn.addEventListener("click",()=>{
-  currentCapsule = {id:Date.now().toString(), title:"", subject:"", level:"Beginner", description:"", notes:[], flashcards:[], quiz:[]};
+newCapsuleBtn.addEventListener("click", ()=>{
+  currentCapsule = {
+    id: Date.now().toString(),
+    title: "",
+    subject: "",
+    level: "Beginner",
+    description: "",
+    notes: [],
+    flashcards: [],
+    quiz: []
+  };
   loadAuthorForm();
 });
 
 // Add Flashcard
-addFlashcardBtn.addEventListener("click",()=>{
+addFlashcardBtn.addEventListener("click", ()=>{
   if(!currentCapsule) return alert("Create a new capsule first!");
   currentCapsule.flashcards.push({front:"", back:""});
   renderFlashcards();
 });
 
 // Add Question
-addQuestionBtn.addEventListener("click",()=>{
+addQuestionBtn.addEventListener("click", ()=>{
   if(!currentCapsule) return alert("Create a new capsule first!");
   currentCapsule.quiz.push({question:"", choices:["","","",""], answer:0, explanation:""});
   renderQuiz();
 });
 
 // Save Capsule
-saveCapsuleBtn.addEventListener("click",()=>{
+saveCapsuleBtn.addEventListener("click", ()=>{
   if(!currentCapsule) return alert("No capsule to save!");
   currentCapsule.title = titleInput.value.trim() || currentCapsule.title;
   currentCapsule.subject = subjectInput.value.trim() || currentCapsule.subject;
@@ -123,27 +134,25 @@ saveCapsuleBtn.addEventListener("click",()=>{
   currentCapsule.description = descInput.value.trim();
   currentCapsule.notes = notesInput.value.split("\n").map(s=>s.trim()).filter(Boolean);
 
-  // Flashcards (حذف خالی‌ها)
+  // Flashcards
   currentCapsule.flashcards = Array.from(flashcardsList.querySelectorAll(".list-group-item"))
     .map(div=>{
       const front = div.querySelector(".frontInput").value.trim();
       const back = div.querySelector(".backInput").value.trim();
       if(!front && !back) return null;
       return {front, back};
-    })
-    .filter(Boolean);
+    }).filter(Boolean);
 
-  // Quiz (حذف خالی‌ها)
+  // Quiz
   currentCapsule.quiz = Array.from(quizList.querySelectorAll(".list-group-item"))
-    .map((div,i)=>{
+    .map(div=>{
       const question = div.querySelector(".questionInput").value.trim();
       const choices = Array.from(div.querySelectorAll(".choiceInput")).map(inp=>inp.value.trim());
       const answer = parseInt(div.querySelector(".correctInput").value);
       const explanation = div.querySelector(".explanationInput").value.trim();
       if(!question && choices.every(c=>!c)) return null;
       return {question, choices, answer, explanation};
-    })
-    .filter(Boolean);
+    }).filter(Boolean);
 
   const idx = capsules.findIndex(c=>c.id===currentCapsule.id);
   if(idx>-1) capsules[idx]=currentCapsule;
@@ -151,5 +160,5 @@ saveCapsuleBtn.addEventListener("click",()=>{
 
   saveCapsules();
   alert("Capsule saved!");
-  populateLearnSelector();
+  loadAuthorForm(); // reload form
 });
