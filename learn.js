@@ -1,120 +1,119 @@
-// =============================
-// Learn.js
-// =============================
 
-// HTML Elements
+// learn.js
+
+// المان‌ها
+const learnNotes = document.getElementById("learn-notes");
 const notesList = document.getElementById("notesList");
+const learnFlashcards = document.getElementById("learn-flashcards");
 const flashcardDisplay = document.getElementById("flashcardDisplay");
 const prevCardBtn = document.getElementById("prevCardBtn");
 const nextCardBtn = document.getElementById("nextCardBtn");
 const flipCardBtn = document.getElementById("flipCardBtn");
+const learnQuiz = document.getElementById("learn-quiz");
 const quizContainer = document.getElementById("quizContainer");
+const learnSelector = document.getElementById("learnSelector");
 
-// State
 let currentIndex = 0;
-let flashcardFlipped = false;
+let showingFront = true;
 
-// Update Learn Mode when capsule selected
+// آپدیت Learn Mode
 function updateLearnMode() {
-  if (!currentCapsule) return;
+  if(!currentCapsule) {
+    notesList.innerHTML = "";
+    flashcardDisplay.textContent = "Select a capsule";
+    quizContainer.innerHTML = "";
+    return;
+  }
 
-  renderNotes();
-  renderFlashcard();
+  // Notes
+  notesList.innerHTML = "";
+  currentCapsule.notes.forEach(note => {
+    const li = document.createElement("li");
+    li.textContent = note;
+    notesList.appendChild(li);
+  });
+
+  // Flashcards
   currentIndex = 0;
-  flashcardFlipped = false;
-  renderQuiz();
+  showingFront = true;
+  renderFlashcard();
+
+  // Quiz
+  quizContainer.innerHTML = "";
+  renderQuizQuestion();
 }
 
-// ========== Notes ==========
-function renderNotes() {
-  notesList.innerHTML = "";
-  (currentCapsule.notes || []).forEach(note => {
-    const li = document.createElement("li");
-    li.className = "list-group-item";
-    li.innerText = note;
-    notesList.appendChild(li);
+// Flashcards
+function renderFlashcard() {
+  if(!currentCapsule.flashcards.length){
+    flashcardDisplay.textContent = "No flashcards";
+    return;
+  }
+  const card = currentCapsule.flashcards[currentIndex];
+  flashcardDisplay.textContent = showingFront ? card.front : card.back;
+}
+
+flipCardBtn.addEventListener("click", ()=>{
+  showingFront = !showingFront;
+  renderFlashcard();
+});
+
+prevCardBtn.addEventListener("click", ()=>{
+  if(currentIndex>0) currentIndex--;
+  showingFront = true;
+  renderFlashcard();
+});
+
+nextCardBtn.addEventListener("click", ()=>{
+  if(currentIndex<currentCapsule.flashcards.length-1) currentIndex++;
+  showingFront = true;
+  renderFlashcard();
+});
+
+// Quiz
+let quizIndex = 0;
+let score = 0;
+
+function renderQuizQuestion() {
+  if(!currentCapsule.quiz.length){
+    quizContainer.innerHTML = "<p>No quiz questions.</p>";
+    return;
+  }
+  if(quizIndex >= currentCapsule.quiz.length){
+    quizContainer.innerHTML = `<p>Quiz finished! Score: ${score}/${currentCapsule.quiz.length}</p>`;
+    return;
+  }
+
+  const q = currentCapsule.quiz[quizIndex];
+  quizContainer.innerHTML = `
+    <p><strong>Q${quizIndex+1}:</strong> ${q.question}</p>
+    <div class="d-flex flex-column gap-2">
+      ${q.choices.map((c,i)=>`<button class="btn btn-outline-primary btn-sm choiceBtn" data-index="${i}">${c}</button>`).join("")}
+    </div>
+  `;
+
+  quizContainer.querySelectorAll(".choiceBtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const answer = parseInt(btn.dataset.index);
+      if(answer === q.answer){
+        btn.classList.add("btn-success");
+        score++;
+      } else {
+        btn.classList.add("btn-danger");
+      }
+      setTimeout(()=>{
+        quizIndex++;
+        renderQuizQuestion();
+      },500);
+    });
   });
 }
 
-// ========== Flashcards ==========
-function renderFlashcard() {
-  if (!currentCapsule.flashcards || currentCapsule.flashcards.length === 0) {
-    flashcardDisplay.innerText = "No flashcards available";
-    return;
-  }
-  const fc = currentCapsule.flashcards[currentIndex];
-  flashcardDisplay.innerText = flashcardFlipped ? fc.back : fc.front;
-}
-
-// Flip Flashcard
-flipCardBtn.addEventListener("click", () => {
-  flashcardFlipped = !flashcardFlipped;
-  renderFlashcard();
+// تغییر کپسول از Selector
+learnSelector.addEventListener("change", ()=>{
+  const id = learnSelector.value;
+  currentCapsule = capsules.find(c=>c.id===id);
+  quizIndex = 0;
+  score = 0;
+  updateLearnMode();
 });
-
-flashcardDisplay.addEventListener("click", () => {
-  flashcardFlipped = !flashcardFlipped;
-  renderFlashcard();
-});
-
-// Prev / Next Flashcard
-prevCardBtn.addEventListener("click", () => {
-  if (!currentCapsule.flashcards || currentCapsule.flashcards.length === 0) return;
-  currentIndex = (currentIndex - 1 + currentCapsule.flashcards.length) % currentCapsule.flashcards.length;
-  flashcardFlipped = false;
-  renderFlashcard();
-});
-
-nextCardBtn.addEventListener("click", () => {
-  if (!currentCapsule.flashcards || currentCapsule.flashcards.length === 0) return;
-  currentIndex = (currentIndex + 1) % currentCapsule.flashcards.length;
-  flashcardFlipped = false;
-  renderFlashcard();
-});
-
-// ========== Quiz ==========
-function renderQuiz() {
-  quizContainer.innerHTML = "";
-  if (!currentCapsule.quiz || currentCapsule.quiz.length === 0) {
-    quizContainer.innerText = "No quiz questions available";
-    return;
-  }
-
-  let quizIndex = 0;
-  let score = 0;
-
-  function showQuestion(i) {
-    const q = currentCapsule.quiz[i];
-    quizContainer.innerHTML = `
-      <h6>${escapeHTML(q.question)}</h6>
-      <div class="d-flex flex-column gap-2">
-        ${q.choices.map((c,j)=>`<button class="btn btn-outline-primary btn-sm choiceBtn" data-index="${j}">${escapeHTML(c)}</button>`).join("")}
-      </div>
-      <p class="mt-2" id="feedback"></p>
-    `;
-
-    quizContainer.querySelectorAll(".choiceBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const chosen = parseInt(btn.dataset.index);
-        const feedback = quizContainer.querySelector("#feedback");
-        if (chosen === q.correct) {
-          feedback.innerText = "✅ Correct!";
-          score++;
-        } else {
-          feedback.innerText = `❌ Wrong! Correct: ${q.choices[q.correct]}`;
-        }
-
-        setTimeout(() => {
-          quizIndex++;
-          if (quizIndex < currentCapsule.quiz.length) {
-            showQuestion(quizIndex);
-          } else {
-            quizContainer.innerHTML = `<h5>Quiz Completed</h5><p>Score: ${score}/${currentCapsule.quiz.length}</p>`;
-          }
-        }, 800);
-      });
-    });
-  }
-
-  showQuestion(quizIndex);
-}
