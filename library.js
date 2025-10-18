@@ -1,57 +1,65 @@
 
-// ====== Library.js ======
+// ==============================
+// Pocket Classroom - library.js
+// ==============================
+
+// المان‌ها
 const capsuleGrid = document.getElementById("capsuleGrid");
 const newCapsuleBtn = document.getElementById("newCapsuleBtn");
 const learnSelector = document.getElementById("learnSelector");
 
-// نمونه داده‌ها (4 کپسول)
-let capsules = [
+// Load capsules from localStorage or sample data
+let capsules = JSON.parse(localStorage.getItem("pc_capsules")) || [
   {
+    id: crypto.randomUUID(),
     title: "Biology Basics",
     subject: "Biology",
     level: "Beginner",
     description: "Intro to biology concepts",
     notes: ["Cell structure", "DNA basics"],
     flashcards: [{front:"Cell", back:"Basic unit of life"}, {front:"DNA", back:"Genetic material"}],
-    quiz: [{question:"DNA shape?", choices:["Double helix","Single helix","Circle","Triangle"], answer:0}]
+    quiz: [{question:"DNA shape?", choices:["Double helix","Single helix","Circle","Triangle"], answer:0, explanation:""}]
   },
   {
+    id: crypto.randomUUID(),
     title: "Physics Intro",
     subject: "Physics",
     level: "Intermediate",
     description: "Basic physics principles",
     notes: ["Newton's laws", "Energy forms"],
     flashcards: [{front:"Force", back:"Mass x Acceleration"}],
-    quiz: [{question:"Unit of force?", choices:["N","J","W","Pa"], answer:0}]
+    quiz: [{question:"Unit of force?", choices:["N","J","W","Pa"], answer:0, explanation:""}]
   },
   {
+    id: crypto.randomUUID(),
     title: "Chemistry 101",
     subject: "Chemistry",
     level: "Beginner",
     description: "Intro to chemistry",
     notes: ["Periodic table", "Atoms"],
     flashcards: [{front:"Atom", back:"Smallest particle"}],
-    quiz: [{question:"H2O is?", choices:["Water","Oxygen","Hydrogen","Salt"], answer:0}]
+    quiz: [{question:"H2O is?", choices:["Water","Oxygen","Hydrogen","Salt"], answer:0, explanation:""}]
   },
   {
+    id: crypto.randomUUID(),
     title: "Math Fun",
     subject: "Math",
     level: "Advanced",
     description: "Challenging math problems",
     notes: ["Algebra", "Geometry"],
     flashcards: [{front:"Pythagoras theorem", back:"a² + b² = c²"}],
-    quiz: [{question:"2+2?", choices:["3","4","5","6"], answer:1}]
+    quiz: [{question:"2+2?", choices:["3","4","5","6"], answer:1, explanation:""}]
   }
 ];
 
-// ذخیره اولیه در LocalStorage
-if(!localStorage.getItem("pc_capsules")) {
+// Save capsules to localStorage
+function saveCapsules() {
     localStorage.setItem("pc_capsules", JSON.stringify(capsules));
-} else {
-    capsules = JSON.parse(localStorage.getItem("pc_capsules"));
 }
 
-// ===== رندر Library =====
+// ==============================
+// Render Library
+// ==============================
 function renderLibrary() {
     capsuleGrid.innerHTML = "";
     capsules.forEach(c => {
@@ -73,17 +81,21 @@ function renderLibrary() {
 
         // Event Listeners
         div.querySelector(".learnBtn").addEventListener("click", ()=>{
-            selectCapsule(c.title);
+            selectCapsule(c.id);
+            showSection(learnSection);
             window.scrollTo({top: document.getElementById("learn").offsetTop-70, behavior:"smooth"});
         });
+
         div.querySelector(".editBtn").addEventListener("click", ()=>{
-            selectCapsule(c.title);
+            selectCapsule(c.id);
+            showSection(authorSection);
             window.scrollTo({top: document.getElementById("author").offsetTop-70, behavior:"smooth"});
         });
+
         div.querySelector(".delBtn").addEventListener("click", ()=>{
             if(confirm(`Delete ${c.title}?`)){
-                capsules = capsules.filter(cp => cp.title !== c.title);
-                localStorage.setItem("pc_capsules", JSON.stringify(capsules));
+                capsules = capsules.filter(cp => cp.id !== c.id);
+                saveCapsules();
                 renderLibrary();
                 populateLearnSelector();
             }
@@ -91,38 +103,57 @@ function renderLibrary() {
     });
 }
 
-// ===== Learn Selector =====
+// ==============================
+// Populate Learn Selector
+// ==============================
 function populateLearnSelector() {
     learnSelector.innerHTML = "";
+    if(!capsules.length){
+        learnSelector.innerHTML = `<option value="">No capsules</option>`;
+        return;
+    }
     capsules.forEach(c => {
         const opt = document.createElement("option");
-        opt.value = c.title;
+        opt.value = c.id;
         opt.innerText = c.title;
         learnSelector.appendChild(opt);
     });
+    if(currentCapsule) learnSelector.value = currentCapsule.id;
 }
 
-// ===== انتخاب کپسول =====
-function selectCapsule(title){
-    currentCapsule = capsules.find(c => c.title === title);
+// ==============================
+// Select Capsule
+// ==============================
+function selectCapsule(id){
+    currentCapsule = capsules.find(c => c.id === id);
     updateLearnMode();
+    if(typeof loadAuthorForm === "function") loadAuthorForm();
 }
 
-// ===== New Capsule =====
+// ==============================
+// New Capsule
+// ==============================
 newCapsuleBtn.addEventListener("click", ()=>{
     const title = prompt("Enter new capsule title:"); if(!title) return;
     const subject = prompt("Enter subject:") || "General";
     const level = prompt("Enter level (Beginner/Intermediate/Advanced):") || "Beginner";
     const description = prompt("Enter description:") || "";
-    const newCap = {title, subject, level, description, notes:[], flashcards:[], quiz:[]};
+    const newCap = {
+        id: crypto.randomUUID(),
+        title, subject, level, description,
+        notes:[], flashcards:[], quiz:[]
+    };
     capsules.push(newCap);
-    localStorage.setItem("pc_capsules", JSON.stringify(capsules));
+    saveCapsules();
     renderLibrary();
     populateLearnSelector();
-    selectCapsule(title);
+    selectCapsule(newCap.id);
+    showSection(authorSection);
     window.scrollTo({top: document.getElementById("author").offsetTop-70, behavior:"smooth"});
 });
 
-// ===== INITIAL SETUP =====
+// ==============================
+// INITIAL SETUP
+// ==============================
 renderLibrary();
 populateLearnSelector();
