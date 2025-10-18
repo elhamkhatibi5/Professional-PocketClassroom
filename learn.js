@@ -13,9 +13,10 @@ let capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
 let currentCapsule = null;
 let flashIndex = 0, showingFront = true, quizIndex = 0, score = 0;
 
+// ========================
 // Populate selector
+// ========================
 function populateLearnSelector() {
-  capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]"); // reload from storage
   learnSelector.innerHTML = "";
   capsules.forEach(c => {
     const opt = document.createElement("option");
@@ -23,49 +24,51 @@ function populateLearnSelector() {
     opt.textContent = c.title || "(No title)";
     learnSelector.appendChild(opt);
   });
-  if (capsules.length > 0) {
+  if(capsules.length>0){
     const selectedId = currentCapsule ? currentCapsule.id : capsules[0].id;
     learnSelector.value = selectedId;
     loadLearnCapsule(selectedId);
-  } else {
-    currentCapsule = null;
-    updateLearnMode();
   }
 }
 
-// Load capsule into Learn Mode
-function loadLearnCapsule(id) {
-  capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]"); // always latest
-  currentCapsule = capsules.find(c => c.id === id);
-  flashIndex = 0; showingFront = true;
-  quizIndex = 0; score = 0;
+// ========================
+// Load capsule
+// ========================
+function loadLearnCapsule(id){
+  currentCapsule = capsules.find(c=>c.id===id);
+  flashIndex = 0;
+  showingFront = true;
+  quizIndex = 0;
+  score = 0;
   updateLearnMode();
 }
 
+// ========================
 // Update Learn Mode UI
-function updateLearnMode() {
+// ========================
+function updateLearnMode(){
   // Notes
   notesList.innerHTML = "";
-  if (currentCapsule && currentCapsule.notes) {
-    currentCapsule.notes.forEach(n => {
+  if(currentCapsule && currentCapsule.notes){
+    currentCapsule.notes.forEach(n=>{
       const li = document.createElement("li");
       li.textContent = n;
       notesList.appendChild(li);
     });
   }
 
-  // Flashcards
-  flashIndex = 0; showingFront = true;
+  // Flashcard
   renderFlashcard();
 
   // Quiz
-  quizIndex = 0; score = 0;
   renderQuizQuestion();
 }
 
-// Flashcard
-function renderFlashcard() {
-  if (!currentCapsule || !currentCapsule.flashcards || currentCapsule.flashcards.length === 0) {
+// ========================
+// Flashcard functions
+// ========================
+function renderFlashcard(){
+  if(!currentCapsule || !currentCapsule.flashcards || currentCapsule.flashcards.length===0){
     flashcardDisplay.textContent = "No flashcards";
     return;
   }
@@ -73,39 +76,43 @@ function renderFlashcard() {
   flashcardDisplay.textContent = showingFront ? card.front : card.back;
 }
 
-flipCardBtn.addEventListener("click", () => {
+flipCardBtn.addEventListener("click", ()=>{
+  if(!currentCapsule || !currentCapsule.flashcards || currentCapsule.flashcards.length===0) return;
   showingFront = !showingFront;
   renderFlashcard();
 });
 
-prevCardBtn.addEventListener("click", () => {
-  if (!currentCapsule || flashIndex <= 0) return;
+prevCardBtn.addEventListener("click", ()=>{
+  if(!currentCapsule || flashIndex<=0) return;
   flashIndex--;
   showingFront = true;
   renderFlashcard();
 });
 
-nextCardBtn.addEventListener("click", () => {
-  if (!currentCapsule || flashIndex >= currentCapsule.flashcards.length - 1) return;
+nextCardBtn.addEventListener("click", ()=>{
+  if(!currentCapsule || flashIndex >= currentCapsule.flashcards.length-1) return;
   flashIndex++;
   showingFront = true;
   renderFlashcard();
 });
 
-// Quiz
-function renderQuizQuestion() {
-  if (!currentCapsule || !currentCapsule.quiz || currentCapsule.quiz.length === 0) {
+// ========================
+// Quiz functions
+// ========================
+function renderQuizQuestion(){
+  if(!currentCapsule || !currentCapsule.quiz || currentCapsule.quiz.length===0){
     quizContainer.innerHTML = "<p>No quiz questions.</p>";
     return;
   }
-  if (quizIndex >= currentCapsule.quiz.length) {
+
+  if(quizIndex >= currentCapsule.quiz.length){
     quizContainer.innerHTML = `<p>Quiz finished! Score: ${score}/${currentCapsule.quiz.length}</p>`;
     return;
   }
 
   const q = currentCapsule.quiz[quizIndex];
   quizContainer.innerHTML = `
-    <p><strong>Q${quizIndex + 1}:</strong> ${q.question}</p>
+    <p><strong>Q${quizIndex+1}:</strong> ${q.question}</p>
     <div class="d-flex flex-column gap-2">
       ${q.choices.map((c,i)=>`<button class="btn btn-outline-primary btn-sm choiceBtn" data-index="${i}">${c}</button>`).join("")}
     </div>
@@ -132,12 +139,20 @@ function renderQuizQuestion() {
   });
 }
 
+// ========================
 // Selector change
+// ========================
 learnSelector.addEventListener("change", ()=>{
   loadLearnCapsule(learnSelector.value);
 });
 
+// ========================
 // Initial load
+// ========================
 document.addEventListener("DOMContentLoaded", ()=>{
+  capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
+  if(capsules.length>0){
+    currentCapsule = capsules[0];
+  }
   populateLearnSelector();
 });
