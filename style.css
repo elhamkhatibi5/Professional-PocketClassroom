@@ -1,4 +1,7 @@
 
+/* =============================
+   Base Theme
+============================= */
 body.light-mode {
   background-color: #f8f9fa;
   color: #212529;
@@ -9,17 +12,32 @@ body.dark-mode {
   color: #f1f1f1;
 }
 
+/* =============================
+   Navbar
+============================= */
 .navbar .nav-link {
   cursor: pointer;
+  transition: color 0.2s;
+}
+.navbar .nav-link:hover {
+  color: #ffc107;
 }
 
+/* =============================
+   Capsule Cards
+============================= */
 .capsule-card {
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 .capsule-card:hover {
   transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
+/* =============================
+   Flashcards
+============================= */
 .flashcard {
   border: 1px solid #ccc;
   border-radius: 0.5rem;
@@ -30,7 +48,10 @@ body.dark-mode {
   user-select: none;
   background-color: #fff;
   color: #000;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+.flashcard:hover {
+  transform: scale(1.03);
 }
 
 body.dark-mode .flashcard {
@@ -38,6 +59,29 @@ body.dark-mode .flashcard {
   color: #f1f1f1;
 }
 
+/* =============================
+   Inputs
+============================= */
 .list-group-item input {
   margin-bottom: 0.3rem;
+}
+
+/* =============================
+   Buttons
+============================= */
+button {
+  transition: transform 0.1s;
+}
+button:active {
+  transform: scale(0.97);
+}
+
+/* =============================
+   Notes / Quiz List
+============================= */
+#notesList li {
+  margin-bottom: 0.3rem;
+}
+#quizContainer button {
+  width: 100%;
 }
