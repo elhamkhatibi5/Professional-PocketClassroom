@@ -1,43 +1,62 @@
 
-// =============================
-// Main.js
-// =============================
+// main.js
 
+// Sections
+const librarySection = document.getElementById("library");
+const authorSection = document.getElementById("author");
+const learnSection = document.getElementById("learn");
+
+// Navbar links
+const navLinks = document.querySelectorAll(".nav-link");
+
+// Theme toggle
 const themeToggle = document.getElementById("themeToggle");
 const body = document.body;
 
-// ===== Dark / Light Mode =====
-
-// Load saved theme from localStorage
-let currentTheme = localStorage.getItem("pc_theme") || "light";
-applyTheme(currentTheme);
-
-// Toggle theme on button click
-themeToggle.addEventListener("click", () => {
-  currentTheme = currentTheme === "light" ? "dark" : "light";
-  applyTheme(currentTheme);
-  localStorage.setItem("pc_theme", currentTheme);
-});
-
-function applyTheme(theme) {
-  if (theme === "dark") {
-    body.classList.remove("light-mode");
-    body.classList.add("dark-mode");
-    themeToggle.innerHTML = `<i class="bi bi-sun-fill"></i> Light`;
-  } else {
-    body.classList.remove("dark-mode");
-    body.classList.add("light-mode");
-    themeToggle.innerHTML = `<i class="bi bi-moon-stars"></i> Dark`;
-  }
+// نمایش یک سشن و مخفی کردن بقیه
+function showSection(section) {
+  librarySection.style.display = "none";
+  authorSection.style.display = "none";
+  learnSection.style.display = "none";
+  section.style.display = "block";
 }
 
-// ===== Capsule selection from Learn dropdown =====
-learnSelector.addEventListener("change", () => {
-  selectCapsule(learnSelector.value);
+// تغییر سشن با Navbar
+navLinks.forEach(link=>{
+  link.addEventListener("click", e=>{
+    e.preventDefault();
+    const target = link.getAttribute("href");
+    if(target === "#library") showSection(librarySection);
+    else if(target === "#author") showSection(authorSection);
+    else if(target === "#learn") showSection(learnSection);
+  });
 });
 
-// ===== Initialize =====
-renderLibrary();
-populateLearnSelector();
-updateAuthorMode();
-updateLearnMode();
+// Dark / Light Mode
+function loadTheme() {
+  const saved = localStorage.getItem("pc_theme");
+  if(saved) body.className = saved;
+  updateThemeButton();
+}
+
+function toggleTheme() {
+  if(body.classList.contains("light-mode")) body.className="dark-mode";
+  else body.className="light-mode";
+  localStorage.setItem("pc_theme", body.className);
+  updateThemeButton();
+}
+
+function updateThemeButton() {
+  themeToggle.innerHTML = body.classList.contains("light-mode") ? '<i class="bi bi-moon-stars"></i> Dark' : '<i class="bi bi-sun"></i> Light';
+}
+
+themeToggle.addEventListener("click", toggleTheme);
+
+// INITIAL LOAD
+document.addEventListener("DOMContentLoaded", ()=>{
+  showSection(librarySection);
+  loadTheme();
+  if(capsules.length>0) currentCapsule = capsules[0];
+  loadAuthorForm();
+  updateLearnMode();
+});
