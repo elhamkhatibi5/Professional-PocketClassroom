@@ -1,43 +1,30 @@
+// utils.js
 
-// =============================
-// Utility Functions
-// =============================
-
-// Escape HTML to prevent broken HTML injection
+// جلوگیری از تزریق HTML
 function escapeHTML(str) {
-  if (!str) return "";
-  return str.replace(/[&<>"']/g, function (m) {
-    switch (m) {
-      case "&": return "&amp;";
-      case "<": return "&lt;";
-      case ">": return "&gt;";
-      case '"': return "&quot;";
-      case "'": return "&#039;";
-      default: return m;
-    }
-  });
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
-// Human-readable time ago
-function timeAgo(isoDate) {
-  const seconds = Math.floor((new Date() - new Date(isoDate)) / 1000);
-  const intervals = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 },
-    { label: "second", seconds: 1 },
-  ];
-  for (let i of intervals) {
-    const count = Math.floor(seconds / i.seconds);
-    if (count > 0) return `${count} ${i.label}${count > 1 ? "s" : ""} ago`;
-  }
-  return "just now";
+// نمایش زمان گذشته به صورت انسانی
+function timeAgo(date) {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  let interval = Math.floor(seconds / 31536000);
+  if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+  interval = Math.floor(seconds / 2592000);
+  if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+  return "Just now";
 }
 
-// Debounce function for inputs
-function debounce(func, wait = 300) {
+// تابع debounce برای کاهش فراخوانی‌های سریع
+function debounce(func, wait) {
   let timeout;
   return function(...args) {
     clearTimeout(timeout);
@@ -45,17 +32,6 @@ function debounce(func, wait = 300) {
   };
 }
 
-// Generate unique ID
-function generateId() {
-  return 'pc-' + Math.random().toString(36).substr(2, 9);
-}
-
-// Download JSON as file
-function downloadJSON(obj, filename) {
-  const blob = new Blob([JSON.stringify(obj, null, 2)], {type: "application/json"});
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
+// تابع ساده برای انتخابگر کوتاه
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
