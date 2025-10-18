@@ -1,51 +1,22 @@
 
-// ==============================
-// Pocket Classroom - learn.js
-// ==============================
+// learn.js
 
 // المان‌ها
-const learnNotes = document.getElementById("learn-notes");
-const notesList = document.getElementById("notesList");
-const learnFlashcards = document.getElementById("learn-flashcards");
-const flashcardDisplay = document.getElementById("flashcardDisplay");
-const prevCardBtn = document.getElementById("prevCardBtn");
-const nextCardBtn = document.getElementById("nextCardBtn");
-const flipCardBtn = document.getElementById("flipCardBtn");
-const learnQuiz = document.getElementById("learn-quiz");
-const quizContainer = document.getElementById("quizContainer");
-const learnSelector = document.getElementById("learnSelector");
+const notesList = $("#notesList");
+const flashcardDisplay = $("#flashcardDisplay");
+const prevCardBtn = $("#prevCardBtn");
+const nextCardBtn = $("#nextCardBtn");
+const flipCardBtn = $("#flipCardBtn");
+const quizContainer = $("#quizContainer");
+const learnSelector = $("#learnSelector");
 
-let currentIndex = 0;
+let flashIndex = 0;
 let showingFront = true;
 let quizIndex = 0;
 let score = 0;
 
-// ==============================
-// Populate Learn Selector
-// ==============================
-function populateLearnSelector() {
-  learnSelector.innerHTML = "";
-  if(!capsules.length) {
-    learnSelector.innerHTML = `<option value="">No capsules</option>`;
-    return;
-  }
-  capsules.forEach(c=>{
-    const opt = document.createElement("option");
-    opt.value = c.id;
-    opt.textContent = c.title || "Untitled Capsule";
-    learnSelector.appendChild(opt);
-  });
-
-  // Set selected to currentCapsule
-  if(currentCapsule) learnSelector.value = currentCapsule.id;
-}
-
-// ==============================
-// Update Learn Mode
-// ==============================
+// آپدیت Learn Mode
 function updateLearnMode() {
-  populateLearnSelector();
-
   if(!currentCapsule) {
     notesList.innerHTML = "";
     flashcardDisplay.textContent = "Select a capsule";
@@ -55,16 +26,14 @@ function updateLearnMode() {
 
   // Notes
   notesList.innerHTML = "";
-  if(currentCapsule.notes && currentCapsule.notes.length){
-    currentCapsule.notes.forEach(note=>{
-      const li = document.createElement("li");
-      li.textContent = note;
-      notesList.appendChild(li);
-    });
-  }
+  currentCapsule.notes.forEach(note=>{
+    const li = document.createElement("li");
+    li.textContent = note;
+    notesList.appendChild(li);
+  });
 
   // Flashcards
-  currentIndex = 0;
+  flashIndex = 0;
   showingFront = true;
   renderFlashcard();
 
@@ -74,45 +43,39 @@ function updateLearnMode() {
   renderQuizQuestion();
 }
 
-// ==============================
-// Flashcards
-// ==============================
+// فلش‌کارت
 function renderFlashcard() {
-  if(!currentCapsule || !currentCapsule.flashcards || currentCapsule.flashcards.length === 0){
+  if(!currentCapsule.flashcards || currentCapsule.flashcards.length===0){
     flashcardDisplay.textContent = "No flashcards";
     return;
   }
-  const card = currentCapsule.flashcards[currentIndex];
+  const card = currentCapsule.flashcards[flashIndex];
   flashcardDisplay.textContent = showingFront ? card.front : card.back;
 }
 
-// Flip & Navigation
-flipCardBtn.addEventListener("click", ()=>{
+flipCardBtn.addEventListener("click",()=>{
   showingFront = !showingFront;
   renderFlashcard();
 });
 
-prevCardBtn.addEventListener("click", ()=>{
-  if(currentIndex>0) currentIndex--;
+prevCardBtn.addEventListener("click",()=>{
+  if(flashIndex>0) flashIndex--;
   showingFront = true;
   renderFlashcard();
 });
 
-nextCardBtn.addEventListener("click", ()=>{
-  if(currentIndex < currentCapsule.flashcards.length-1) currentIndex++;
+nextCardBtn.addEventListener("click",()=>{
+  if(currentCapsule.flashcards && flashIndex<currentCapsule.flashcards.length-1) flashIndex++;
   showingFront = true;
   renderFlashcard();
 });
 
-// ==============================
 // Quiz
-// ==============================
 function renderQuizQuestion() {
-  if(!currentCapsule || !currentCapsule.quiz || currentCapsule.quiz.length===0){
+  if(!currentCapsule.quiz || currentCapsule.quiz.length===0){
     quizContainer.innerHTML = "<p>No quiz questions.</p>";
     return;
   }
-
   if(quizIndex >= currentCapsule.quiz.length){
     quizContainer.innerHTML = `<p>Quiz finished! Score: ${score}/${currentCapsule.quiz.length}</p>`;
     return;
@@ -124,42 +87,54 @@ function renderQuizQuestion() {
     <div class="d-flex flex-column gap-2">
       ${q.choices.map((c,i)=>`<button class="btn btn-outline-primary btn-sm choiceBtn" data-index="${i}">${c}</button>`).join("")}
     </div>
+    <div id="explanation" class="mt-2 text-muted"></div>
   `;
 
   quizContainer.querySelectorAll(".choiceBtn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      const answer = parseInt(btn.dataset.index);
-      if(answer === q.answer){
+      const selected = parseInt(btn.dataset.index);
+      const explanationDiv = $("#explanation");
+      if(selected === q.answer){
+        btn.classList.remove("btn-outline-primary");
         btn.classList.add("btn-success");
         score++;
+        explanationDiv.textContent = q.explanation ? `✅ ${q.explanation}` : "✅ Correct!";
       } else {
+        btn.classList.remove("btn-outline-primary");
         btn.classList.add("btn-danger");
+        explanationDiv.textContent = q.explanation ? `❌ ${q.explanation}` : "❌ Wrong!";
       }
+      // بعد از 700ms سوال بعدی
       setTimeout(()=>{
         quizIndex++;
         renderQuizQuestion();
-      },500);
+      },700);
     });
   });
 }
 
-// ==============================
-// Selector Change
-// ==============================
+// تغییر کپسول از Selector
 learnSelector.addEventListener("change", ()=>{
-  const id = learnSelector.value;
-  currentCapsule = capsules.find(c=>c.id===id) || null;
-  currentIndex = 0;
+  const title = learnSelector.value;
+  currentCapsule = capsules.find(c=>c.title===title);
+  flashIndex = 0;
   showingFront = true;
   quizIndex = 0;
   score = 0;
   updateLearnMode();
 });
 
-// ==============================
-// Initial Load
-// ==============================
+// وقتی DOM بارگذاری شد، selector را پر کن و حالت Learn را آپدیت کن
 document.addEventListener("DOMContentLoaded", ()=>{
-  populateLearnSelector();
-  updateLearnMode();
+  if(capsules.length>0){
+    learnSelector.innerHTML = "";
+    capsules.forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value = c.title;
+      opt.textContent = c.title;
+      learnSelector.appendChild(opt);
+    });
+    currentCapsule = capsules[0];
+    updateLearnMode();
+  }
 });
