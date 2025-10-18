@@ -54,10 +54,11 @@ function renderFlashcards() {
   (currentCapsule.flashcards || []).forEach(f => {
     const div = document.createElement("div");
     div.className = "list-group-item d-flex gap-2 align-items-center mb-1";
-    div.dataset.id = f.id; // ✅ id یکتا
+    div.dataset.id = f.id;
     div.innerHTML = `
       <input type="text" class="form-control form-control-sm frontInput" value="${escapeHTML(f.front||'')}" placeholder="Front">
       <input type="text" class="form-control form-control-sm backInput" value="${escapeHTML(f.back||'')}" placeholder="Back">
+      <input type="text" class="form-control form-control-sm explanationInput" value="${escapeHTML(f.explanation||'')}" placeholder="Explanation">
       <button class="btn btn-sm btn-danger delFlashBtn"><i class="bi bi-trash"></i></button>
     `;
     flashcardsList.appendChild(div);
@@ -71,7 +72,7 @@ function renderFlashcards() {
 
 addFlashcardBtn.addEventListener("click", () => {
   if (!currentCapsule) return alert("Create a capsule first!");
-  currentCapsule.flashcards.push({id: Date.now().toString(), front:"", back:""});
+  currentCapsule.flashcards.push({id: Date.now().toString(), front:"", back:"", explanation:""});
   renderFlashcards();
 });
 
@@ -81,7 +82,7 @@ function renderQuiz() {
   (currentCapsule.quiz || []).forEach(q => {
     const div = document.createElement("div");
     div.className = "list-group-item mb-2 p-2";
-    div.dataset.id = q.id; // ✅ id یکتا
+    div.dataset.id = q.id;
     div.innerHTML = `
       <input type="text" class="form-control form-control-sm questionInput mb-1" value="${escapeHTML(q.question||'')}" placeholder="Question">
       <div class="d-flex gap-1 mb-1">
@@ -130,8 +131,9 @@ saveCapsuleBtn.addEventListener("click", ()=>{
       const id = div.dataset.id;
       const front = div.querySelector(".frontInput").value.trim();
       const back = div.querySelector(".backInput").value.trim();
-      if(!front && !back) return null;
-      return {id, front, back};
+      const explanation = div.querySelector(".explanationInput").value.trim();
+      if(!front && !back && !explanation) return null;
+      return {id, front, back, explanation};
     }).filter(Boolean);
 
   // Quiz
