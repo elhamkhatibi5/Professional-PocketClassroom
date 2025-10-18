@@ -1,39 +1,89 @@
 {
   "schema": "pocket-classroom/v1",
-  "title": "Biology Basics",
-  "subject": "Biology",
-  "level": "Beginner",
-  "description": "Introduction to cells, DNA, and basic biology concepts.",
-  "notes": [
-    "Cell is the basic unit of life.",
-    "DNA contains genetic information.",
-    "Mitosis and meiosis are two types of cell division."
-  ],
-  "flashcards": [
+  "capsules": [
     {
-      "front": "What is the basic unit of life?",
-      "back": "Cell"
+      "id": "cap1",
+      "title": "Biology Basics",
+      "subject": "Biology",
+      "level": "Beginner",
+      "description": "Intro to Biology concepts",
+      "notes": [
+        "Cells are the basic unit of life.",
+        "DNA stores genetic information.",
+        "Photosynthesis occurs in chloroplasts."
+      ],
+      "flashcards": [
+        {"front": "What is the powerhouse of the cell?", "back": "Mitochondria"},
+        {"front": "Where does photosynthesis occur?", "back": "Chloroplast"}
+      ],
+      "quiz": [
+        {
+          "question": "Which macromolecule is genetic material?",
+          "choices": ["Protein", "Carbohydrate", "DNA", "Lipid"],
+          "answer": 2,
+          "explanation": "DNA stores genetic information."
+        }
+      ]
     },
     {
-      "front": "What carries genetic information?",
-      "back": "DNA"
+      "id": "cap2",
+      "title": "Basic Math",
+      "subject": "Mathematics",
+      "level": "Beginner",
+      "description": "Learn fundamental math operations",
+      "notes": ["Addition combines numbers.", "Subtraction finds the difference."],
+      "flashcards": [
+        {"front": "5 + 7 =", "back": "12"},
+        {"front": "10 - 4 =", "back": "6"}
+      ],
+      "quiz": [
+        {
+          "question": "What is 3 x 4?",
+          "choices": ["7", "12", "9", "15"],
+          "answer": 1,
+          "explanation": "Multiplication of 3 and 4 equals 12."
+        }
+      ]
     },
     {
-      "front": "Name one type of cell division.",
-      "back": "Mitosis"
+      "id": "cap3",
+      "title": "World Capitals",
+      "subject": "Geography",
+      "level": "Intermediate",
+      "description": "Test your knowledge of capitals",
+      "notes": ["Paris is the capital of France.", "Tokyo is the capital of Japan."],
+      "flashcards": [
+        {"front": "Capital of Italy?", "back": "Rome"},
+        {"front": "Capital of Canada?", "back": "Ottawa"}
+      ],
+      "quiz": [
+        {
+          "question": "Capital of Germany?",
+          "choices": ["Berlin", "Munich", "Hamburg", "Frankfurt"],
+          "answer": 0,
+          "explanation": "Berlin is the capital of Germany."
+        }
+      ]
+    },
+    {
+      "id": "cap4",
+      "title": "Programming Basics",
+      "subject": "Computer Science",
+      "level": "Beginner",
+      "description": "Intro to programming concepts",
+      "notes": ["Variables store data.", "Loops repeat actions."],
+      "flashcards": [
+        {"front": "What does HTML stand for?", "back": "HyperText Markup Language"},
+        {"front": "What symbol ends a statement in JavaScript?", "back": ";"}
+      ],
+      "quiz": [
+        {
+          "question": "Which keyword declares a variable in JavaScript?",
+          "choices": ["var", "int", "let", "Both var and let"],
+          "answer": 3,
+          "explanation": "JavaScript allows both 'var' and 'let' for variable declaration."
+        }
+      ]
     }
-  ],
-  "quiz": [
-    {
-      "question": "Which organelle is the powerhouse of the cell?",
-      "choices": ["Nucleus", "Mitochondria", "Ribosome", "Chloroplast"],
-      "correct": 1
-    },
-    {
-      "question": "DNA stands for?",
-      "choices": ["Deoxyribonucleic Acid", "Dinucleic Acid", "Dioxin Acid", "Deoxynucleic Acid"],
-      "correct": 0
-    }
-  ],
-  "updatedAt": "2025-10-18T12:00:00.000Z"
+  ]
 }
