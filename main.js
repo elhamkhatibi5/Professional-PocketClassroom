@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Main Script (Improved Version)
+// Pocket Classroom - Main JS (Fixed & SPA Ready)
 // ===============================
 
 // Sections
