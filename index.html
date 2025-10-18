@@ -2,90 +2,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocket Classroom</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link href="style.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pocket Classroom — SPA Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
 </head>
 <body class="light-mode">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
-  <div class="container">
-    <a class="navbar-brand" href="#"><i class="bi bi-mortarboard-fill me-2 text-warning"></i>Pocket Classroom</a>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item"><a class="nav-link" href="#library"><i class="bi bi-journal-text"></i> Library</a></li>
-      <li class="nav-item"><a class="nav-link" href="#author"><i class="bi bi-pencil-square"></i> Author</a></li>
-      <li class="nav-item"><a class="nav-link" href="#learn"><i class="bi bi-lightbulb"></i> Learn</a></li>
-    </ul>
-    <button id="themeToggle" class="btn btn-outline-light btn-sm ms-3"><i class="bi bi-moon-stars"></i></button>
-  </div>
-</nav>
-
-<main class="container mt-5 pt-5">
-  <!-- Library -->
-  <section id="library" class="mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3><i class="bi bi-journal-text text-primary"></i> Your Capsules</h3>
-      <button id="newCapsuleBtn" class="btn btn-success"><i class="bi bi-plus-circle"></i> New Capsule</button>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <i class="bi bi-mortarboard-fill me-2 fs-4 text-warning"></i>
+        <strong>Pocket Classroom</strong>
+      </a>
+      <div class="d-flex gap-3">
+        <a class="nav-link text-light d-flex align-items-center gap-1" href="#library">
+          <!-- SVG Library -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" viewBox="0 0 16 16">
+            <path d="M1 2.828c.885-.37 2.154-.828 4-.828s3.115.458 4 .828V13.5c-.885-.37-2.154-.828-4-.828s-3.115.458-4 .828V2.828z"/>
+          </svg>
+          Library
+        </a>
+        <a class="nav-link text-light d-flex align-items-center gap-1" href="#author">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffc107" viewBox="0 0 16 16">
+            <path d="M15.502 1.94a.5.5 0 0 1 0 .706l-1 1a.5.5 0 0 1-.707 0L13 2.207l1-1a.5.5 0 0 1 .707 0l.795.733z"/>
+          </svg>
+          Author
+        </a>
+        <a class="nav-link text-light d-flex align-items-center gap-1" href="#learn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0dcaf0" viewBox="0 0 16 16">
+            <path d="M2 6a6 6 0 1 1 12 0c0 2.667-1.333 5-4 6v1h-4v-1c-2.667-1-4-3.333-4-6z"/>
+          </svg>
+          Learn
+        </a>
+      </div>
+      <button id="themeToggle" class="btn btn-outline-light btn-sm ms-3"><i class="bi bi-moon-stars"></i> Dark</button>
     </div>
-    <div id="capsuleGrid" class="row g-3"></div>
-  </section>
+  </nav>
 
-  <!-- Author -->
-  <section id="author" class="mb-5">
-    <h3><i class="bi bi-pencil-square text-warning"></i> Create / Edit Capsule</h3>
-    <input id="titleInput" class="form-control mb-2" placeholder="Title">
-    <input id="subjectInput" class="form-control mb-2" placeholder="Subject">
-    <select id="levelInput" class="form-select mb-2">
-      <option>Beginner</option>
-      <option>Intermediate</option>
-      <option>Advanced</option>
-    </select>
-    <textarea id="descInput" class="form-control mb-2" placeholder="Description"></textarea>
+  <!-- Main Content -->
+  <main class="container mt-5 pt-5">
+    <!-- Library -->
+    <section id="library">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="d-flex align-items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#0d6efd" viewBox="0 0 16 16">
+            <path d="M1 2.828c.885-.37 2.154-.828 4-.828s3.115.458 4 .828V13.5c-.885-.37-2.154-.828-4-.828s-3.115.458-4 .828V2.828z"/>
+          </svg>
+          Your Capsules
+        </h3>
+        <div>
+          <button id="newCapsuleBtn" class="btn btn-success me-2"><i class="bi bi-plus-circle"></i> New</button>
+          <button id="importCapsuleBtn" class="btn btn-outline-info btn-sm"><i class="bi bi-upload"></i> Import</button>
+        </div>
+      </div>
+      <input type="text" id="searchCapsule" class="form-control mb-4" placeholder="Search...">
+      <div id="capsuleGrid" class="row g-3"></div>
+    </section>
 
-    <h5>Notes</h5>
-    <textarea id="notesInput" class="form-control mb-2" placeholder="One note per line"></textarea>
+    <!-- Author -->
+    <section id="author" class="mt-5">
+      <h3 class="mb-3 d-flex align-items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#ffc107" viewBox="0 0 16 16">
+          <path d="M15.502 1.94a.5.5 0 0 1 0 .706l-1 1a.5.5 0 0 1-.707 0L13 2.207l1-1a.5.5 0 0 1 .707 0l.795.733z"/>
+        </svg>
+        Create / Edit Capsule
+      </h3>
+      <form id="metaForm" class="card p-3 shadow-sm mb-4">
+        <div class="row g-3">
+          <div class="col-md-6"><input type="text" id="titleInput" class="form-control" placeholder="Title"></div>
+          <div class="col-md-3"><input type="text" id="subjectInput" class="form-control" placeholder="Subject"></div>
+          <div class="col-md-3">
+            <select id="levelInput" class="form-select"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+          </div>
+        </div>
+        <textarea id="descInput" class="form-control mt-3" rows="2" placeholder="Description"></textarea>
+      </form>
 
-    <h5>Flashcards</h5>
-    <div id="flashcardsList" class="mb-2"></div>
-    <button id="addFlashcardBtn" class="btn btn-outline-primary btn-sm mb-2"><i class="bi bi-plus-circle"></i> Add Flashcard</button>
+      <div class="mb-3">
+        <h5 class="d-flex align-items-center gap-2 mt-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#0dcaf0" viewBox="0 0 16 16">
+            <path d="M2 2v12h12V2H2zm1 1h10v10H3V3z"/>
+          </svg>
+          Notes
+        </h5>
+        <textarea id="notesInput" class="form-control mb-3" rows="5" placeholder="Write each note on a new line..."></textarea>
 
-    <h5>Quiz</h5>
-    <div id="quizList" class="mb-2"></div>
-    <button id="addQuestionBtn" class="btn btn-outline-primary btn-sm mb-2"><i class="bi bi-plus-circle"></i> Add Question</button>
+        <h5 class="d-flex align-items-center gap-2 mt-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#198754" viewBox="0 0 16 16">
+            <path d="M3 3h10v10H3V3zm1 1v8h8V4H4z"/>
+          </svg>
+          Flashcards
+        </h5>
+        <div id="flashcardsList" class="list-group mb-3"></div>
+        <button id="addFlashcardBtn" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus-circle"></i> Add</button>
 
-    <button id="saveCapsuleBtn" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save</button>
-  </section>
+        <h5 class="d-flex align-items-center gap-2 mt-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#dc3545" viewBox="0 0 16 16">
+            <path d="M8 1a7 7 0 1 0 7 7A7 7 0 0 0 8 1zm0 11a1 1 0 1 1 1-1 1 1 0 0 1-1 1z"/>
+          </svg>
+          Quiz
+        </h5>
+        <div id="quizList" class="list-group mb-3"></div>
+        <button id="addQuestionBtn" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus-circle"></i> Add</button>
+      </div>
 
-  <!-- Learn -->
-  <section id="learn">
-    <h3><i class="bi bi-lightbulb text-info"></i> Learn Mode</h3>
-    <select id="learnSelector" class="form-select w-auto mb-3"></select>
-    <h5>Notes</h5>
-    <ol id="notesList" class="list-group list-group-numbered mb-3"></ol>
+      <div class="text-end">
+        <button id="saveCapsuleBtn" class="btn btn-success"><i class="bi bi-save"></i> Save</button>
+      </div>
+    </section>
 
-    <h5>Flashcards</h5>
-    <div id="flashcardDisplay" class="flashcard mb-3 text-center">Click Flip</div>
-    <div class="d-flex gap-2">
-      <button id="prevCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></button>
-      <button id="flipCardBtn" class="btn btn-warning btn-sm"><i class="bi bi-arrow-repeat"></i></button>
-      <button id="nextCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-right"></i></button>
-    </div>
+    <!-- Learn -->
+    <section id="learn" class="mt-5">
+      <h3 class="d-flex align-items-center gap-2 mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#0dcaf0" viewBox="0 0 16 16">
+          <path d="M2 6a6 6 0 1 1 12 0c0 2.667-1.333 5-4 6v1h-4v-1c-2.667-1-4-3.333-4-6z"/>
+        </svg>
+        Learn Mode
+      </h3>
+      <select id="learnSelector" class="form-select w-auto mb-3"></select>
+      <div id="learn-notes" class="mb-4">
+        <h5 class="d-flex align-items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0dcaf0" viewBox="0 0 16 16">
+            <path d="M2 2v12h12V2H2zm1 1h10v10H3V3z"/>
+          </svg>
+          Notes
+        </h5>
+        <ol id="notesList" class="list-group list-group-numbered"></ol>
+      </div>
 
-    <h5>Quiz</h5>
-    <div id="quizContainer" class="card p-3 mt-2 shadow-sm"></div>
-  </section>
-</main>
+      <div id="learn-flashcards" class="text-center mb-4">
+        <h5 class="d-flex align-items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#198754" viewBox="0 0 16 16">
+            <path d="M3 3h10v10H3V3zm1 1v8h8V4H4z"/>
+          </svg>
+          Flashcards
+        </h5>
+        <div id="flashcardDisplay" class="flashcard mx-auto my-3">Click to Flip</div>
+        <div class="d-flex justify-content-center gap-2">
+          <button id="prevCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></button>
+          <button id="flipCardBtn" class="btn btn-warning btn-sm"><i class="bi bi-arrow-repeat"></i></button>
+          <button id="nextCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-right"></i></button>
+        </div>
+      </div>
 
-<footer class="text-center py-3 mt-4 border-top text-muted">
-  <small>© 2025 Pocket Classroom</small>
-</footer>
-<script src="utils.js"></script>  
-<script src="library.js"></script>  
-<script src="author.js"></script>  
-<script src="learn.js"></script>  
-<script src="main.js"></script>  
-</body>  
+      <div id="learn-quiz">
+        <h5 class="d-flex align-items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dc3545" viewBox="0 0 16 16">
+            <path d="M8 1a7 7 0 1 0 7 7A7 7 0 0 0 8 1zm0 11a1 1 0 1 1 1-1 1 1 0 0 1-1 1z"/>
+          </svg>
+          Quiz
+        </h5>
+        <div id="quizContainer" class="card p-3 shadow-sm"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-3 mt-4 border-top text-muted">
+    <small>© 2025 Pocket Classroom — Offline Learning</small>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="utils.js"></script>
+  <script src="library.js"></script>
+  <script src="author.js"></script>
+  <script src="learn.js"></script>
+  <script src="main.js"></script>
+</body>
 </html>
