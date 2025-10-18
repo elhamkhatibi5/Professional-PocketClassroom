@@ -1,1 +1,39 @@
-{"schema":"pocket-classroom/v1","title":"Sample Capsule","notes":["Note 1","Note 2"],"flashcards":[],"quiz":[]}
+{
+  "schema": "pocket-classroom/v1",
+  "title": "Biology Basics",
+  "subject": "Biology",
+  "level": "Beginner",
+  "description": "Introduction to cells, DNA, and basic biology concepts.",
+  "notes": [
+    "Cell is the basic unit of life.",
+    "DNA contains genetic information.",
+    "Mitosis and meiosis are two types of cell division."
+  ],
+  "flashcards": [
+    {
+      "front": "What is the basic unit of life?",
+      "back": "Cell"
+    },
+    {
+      "front": "What carries genetic information?",
+      "back": "DNA"
+    },
+    {
+      "front": "Name one type of cell division.",
+      "back": "Mitosis"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Which organelle is the powerhouse of the cell?",
+      "choices": ["Nucleus", "Mitochondria", "Ribosome", "Chloroplast"],
+      "correct": 1
+    },
+    {
+      "question": "DNA stands for?",
+      "choices": ["Deoxyribonucleic Acid", "Dinucleic Acid", "Dioxin Acid", "Deoxynucleic Acid"],
+      "correct": 0
+    }
+  ],
+  "updatedAt": "2025-10-18T12:00:00.000Z"
+}
