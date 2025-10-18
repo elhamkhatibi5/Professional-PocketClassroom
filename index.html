@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +20,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarLinks">
-      <ul class="navbar-nav me-3 mb-2 mb-lg-0">
+      <ul class="navbar-nav mb-2 mb-lg-0 me-3">
         <li class="nav-item"><a class="nav-link active" href="#library"><i class="bi bi-journal-bookmark"></i> Library</a></li>
         <li class="nav-item"><a class="nav-link" href="#author"><i class="bi bi-pencil-square"></i> Author</a></li>
         <li class="nav-item"><a class="nav-link" href="#learn"><i class="bi bi-lightbulb"></i> Learn</a></li>
@@ -31,14 +30,13 @@
   </div>
 </nav>
 
-<!-- Main content -->
 <main class="container mt-5 pt-5">
 
   <!-- Library Section -->
   <section id="library" class="my-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
       <h3 class="fw-bold text-primary"><i class="bi bi-journal-text"></i> Your Capsules</h3>
-      <div class="d-flex gap-2 flex-wrap">
+      <div class="d-flex gap-2 flex-wrap mt-2 mt-lg-0">
         <button id="newCapsuleBtn" class="btn btn-success"><i class="bi bi-plus-circle"></i> New Capsule</button>
         <button id="importBtn" class="btn btn-info text-white"><i class="bi bi-upload"></i> Import JSON</button>
         <button id="exportBtn" class="btn btn-warning"><i class="bi bi-download"></i> Export JSON</button>
@@ -52,7 +50,6 @@
   <section id="author" class="my-5 d-none">
     <h3 class="mb-4 fw-bold text-warning"><i class="bi bi-pencil-square"></i> Create or Edit Capsule</h3>
 
-    <!-- Meta Form -->
     <form id="metaForm" class="card p-4 shadow-sm mb-4">
       <div class="row g-3">
         <div class="col-md-6"><label class="form-label fw-semibold">Title</label><input type="text" id="titleInput" class="form-control"></div>
@@ -103,6 +100,32 @@
     <div id="learn-flashcards" class="text-center mb-4">
       <h5 class="fw-semibold"><i class="bi bi-card-text"></i> Flashcards</h5>
       <div id="flashcardDisplay" class="flashcard mx-auto my-3">Click to Flip</div>
+      <div class="d-flex justify-content-center gap-2">
+        <button id="prevCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></button>
+        <button id="flipCardBtn" class="btn btn-warning btn-sm"><i class="bi bi-arrow-repeat"></i></button>
+        <button id="nextCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Quiz -->
+    <div id="learn-quiz">
+      <h5 class="fw-semibold"><i class="bi bi-patch-question"></i> Quiz</h5>
+      <div id="quizContainer" class="card p-3 shadow-sm"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="text-center py-3 mt-4 border-top text-muted">
+  <small>© 2025 Pocket Classroom — Offline Learning</small>
+</footer>
+
+<script src="utils.js"></script>
+<script src="library.js"></script>
+<script src="author.js"></script>
+<script src="learn.js"></script>
+<script src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.      <div id="flashcardDisplay" class="flashcard mx-auto my-3">Click to Flip</div>
       <div class="d-flex justify-content-center gap-2">
         <button id="prevCardBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></button>
         <button id="flipCardBtn" class="btn btn-warning btn-sm"><i class="bi bi-arrow-repeat"></i></button>
