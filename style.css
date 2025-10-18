@@ -1,147 +1,43 @@
 
-/* ============================= */
-/* Base Styles & Theme Colors */
-/* ============================= */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+body.light-mode {
   background-color: #f8f9fa;
   color: #212529;
-  transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode {
   background-color: #121212;
-  color: #e0e0e0;
+  color: #f1f1f1;
 }
 
-/* ============================= */
-/* Navbar Styles */
-/* ============================= */
-.navbar-brand i {
-  font-size: 1.5rem;
-}
-
-.nav-link {
-  font-weight: 500;
-}
-
-.nav-link i {
-  margin-right: 0.3rem;
-}
-
-/* ============================= */
-/* Section Titles */
-/* ============================= */
-h3 {
-  font-weight: 600;
-}
-
-h5 {
-  font-weight: 500;
-}
-
-/* ============================= */
-/* Cards: Library & Quiz */
-/* ============================= */
-.card {
-  border-radius: 0.75rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-}
-
-.capsule-card .badge {
-  font-size: 0.8rem;
-  padding: 0.4em 0.6em;
-}
-
-/* ============================= */
-/* Flashcards */
-/* ============================= */
-.flashcard {
-  width: 300px;
-  height: 180px;
-  background: linear-gradient(135deg, #00b4d8, #48cae4);
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 600;
-  font-size: 1.2rem;
-  border-radius: 0.8rem;
+.navbar .nav-link {
   cursor: pointer;
-  perspective: 1000px;
-  transition: background 0.3s;
+}
+
+.capsule-card {
+  transition: transform 0.2s;
+}
+.capsule-card:hover {
+  transform: translateY(-3px);
+}
+
+.flashcard {
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  cursor: pointer;
+  min-width: 200px;
+  min-height: 100px;
+  user-select: none;
+  background-color: #fff;
+  color: #000;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode .flashcard {
-  background: linear-gradient(135deg, #0077b6, #023e8a);
-}
-
-/* ============================= */
-/* Buttons & Inputs */
-/* ============================= */
-.btn-sm i {
-  margin-right: 0.2rem;
-}
-
-input, select, textarea {
-  border-radius: 0.5rem;
-  transition: box-shadow 0.2s;
-}
-
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 5px rgba(0,123,255,0.5);
-  outline: none;
-}
-
-/* ============================= */
-/* Dark Mode Overrides */
-/* ============================= */
-body.dark-mode .card {
   background-color: #1e1e1e;
-  color: #e0e0e0;
+  color: #f1f1f1;
 }
 
-body.dark-mode .form-control, body.dark-mode .form-select, body.dark-mode textarea {
-  background-color: #2a2a2a;
-  color: #e0e0e0;
-  border-color: #444;
-}
-
-body.dark-mode .btn-outline-primary {
-  color: #00b4d8;
-  border-color: #00b4d8;
-}
-
-body.dark-mode .btn-outline-secondary {
-  color: #adb5bd;
-  border-color: #adb5bd;
-}
-
-body.dark-mode .btn-outline-light {
-  color: #f8f9fa;
-  border-color: #f8f9fa;
-}
-
-/* ============================= */
-/* Miscellaneous Spacing */
-/* ============================= */
-.mt-2 { margin-top: 0.5rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 1rem; }
-
-/* ============================= */
-/* Responsive Adjustments */
-/* ============================= */
-@media (max-width: 576px) {
-  .flashcard { width: 90%; height: 150px; font-size: 1rem; }
+.list-group-item input {
+  margin-bottom: 0.3rem;
 }
