@@ -1,51 +1,60 @@
 
-const $ = s => document.querySelector(s);
+// =====================
+// Learn Mode JS
+// =====================
 
-const notesList = $("#notesList");
-const flashcardDisplay = $("#flashcardDisplay");
-const prevCardBtn = $("#prevCardBtn");
-const nextCardBtn = $("#nextCardBtn");
-const flipCardBtn = $("#flipCardBtn");
-const quizContainer = $("#quizContainer");
-const learnSelector = $("#learnSelector");
+const learnSelector = document.getElementById("learnSelector");
+const notesList = document.getElementById("notesList");
+const flashcardDisplay = document.getElementById("flashcardDisplay");
+const flashcardCounter = document.createElement("div"); // نمایش شمارنده
+flashcardDisplay.after(flashcardCounter);
+const prevCardBtn = document.getElementById("prevCardBtn");
+const nextCardBtn = document.getElementById("nextCardBtn");
+const flipCardBtn = document.getElementById("flipCardBtn");
+const quizContainer = document.getElementById("quizContainer");
 
 let capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
 let currentCapsule = null;
-let flashIndex = 0, showingFront = true, quizIndex = 0, score = 0;
+let flashIndex = 0, showingFront = true;
+let quizIndex = 0, score = 0;
 
-// ========================
-// Populate selector
-// ========================
+// =====================
+// Populate Selector
+// =====================
 function populateLearnSelector() {
+  capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
   learnSelector.innerHTML = "";
-  capsules.forEach(c => {
+  capsules.forEach(c=>{
     const opt = document.createElement("option");
     opt.value = c.id;
     opt.textContent = c.title || "(No title)";
     learnSelector.appendChild(opt);
   });
+
   if(capsules.length>0){
     const selectedId = currentCapsule ? currentCapsule.id : capsules[0].id;
     learnSelector.value = selectedId;
     loadLearnCapsule(selectedId);
+  } else {
+    currentCapsule = null;
+    updateLearnMode();
   }
 }
 
-// ========================
-// Load capsule
-// ========================
+// =====================
+// Load Capsule
+// =====================
 function loadLearnCapsule(id){
+  capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
   currentCapsule = capsules.find(c=>c.id===id);
-  flashIndex = 0;
-  showingFront = true;
-  quizIndex = 0;
-  score = 0;
+  flashIndex = 0; showingFront = true;
+  quizIndex = 0; score = 0;
   updateLearnMode();
 }
 
-// ========================
+// =====================
 // Update Learn Mode UI
-// ========================
+// =====================
 function updateLearnMode(){
   // Notes
   notesList.innerHTML = "";
@@ -57,50 +66,50 @@ function updateLearnMode(){
     });
   }
 
-  // Flashcard
+  // Flashcards
   renderFlashcard();
 
   // Quiz
   renderQuizQuestion();
 }
 
-// ========================
-// Flashcard functions
-// ========================
+// =====================
+// Flashcards
+// =====================
 function renderFlashcard(){
-  if(!currentCapsule || !currentCapsule.flashcards || currentCapsule.flashcards.length===0){
+  if(!currentCapsule || !currentCapsule.flashcards?.length){
     flashcardDisplay.textContent = "No flashcards";
+    flashcardCounter.textContent = "";
     return;
   }
   const card = currentCapsule.flashcards[flashIndex];
   flashcardDisplay.textContent = showingFront ? card.front : card.back;
+  flashcardCounter.textContent = `Card ${flashIndex+1} / ${currentCapsule.flashcards.length}`;
 }
 
-flipCardBtn.addEventListener("click", ()=>{
-  if(!currentCapsule || !currentCapsule.flashcards || currentCapsule.flashcards.length===0) return;
+flipCardBtn.onclick = ()=>{
+  if(!currentCapsule?.flashcards?.length) return;
   showingFront = !showingFront;
   renderFlashcard();
-});
-
-prevCardBtn.addEventListener("click", ()=>{
-  if(!currentCapsule || flashIndex<=0) return;
-  flashIndex--;
-  showingFront = true;
+};
+prevCardBtn.onclick = ()=>{
+  if(!currentCapsule?.flashcards?.length) return;
+  if(flashIndex>0) flashIndex--;
+  showingFront=true;
   renderFlashcard();
-});
-
-nextCardBtn.addEventListener("click", ()=>{
-  if(!currentCapsule || flashIndex >= currentCapsule.flashcards.length-1) return;
-  flashIndex++;
-  showingFront = true;
+};
+nextCardBtn.onclick = ()=>{
+  if(!currentCapsule?.flashcards?.length) return;
+  if(flashIndex<currentCapsule.flashcards.length-1) flashIndex++;
+  showingFront=true;
   renderFlashcard();
-});
+};
 
-// ========================
-// Quiz functions
-// ========================
+// =====================
+// Quiz
+// =====================
 function renderQuizQuestion(){
-  if(!currentCapsule || !currentCapsule.quiz || currentCapsule.quiz.length===0){
+  if(!currentCapsule || !currentCapsule.quiz?.length){
     quizContainer.innerHTML = "<p>No quiz questions.</p>";
     return;
   }
@@ -114,45 +123,41 @@ function renderQuizQuestion(){
   quizContainer.innerHTML = `
     <p><strong>Q${quizIndex+1}:</strong> ${q.question}</p>
     <div class="d-flex flex-column gap-2">
-      ${q.choices.map((c,i)=>`<button class="btn btn-outline-primary btn-sm choiceBtn" data-index="${i}">${c}</button>`).join("")}
+      ${q.choices.map((c,i)=>`<button class="choiceBtn btn btn-outline-primary btn-sm" data-index="${i}">${c}</button>`).join("")}
     </div>
     <div id="explanation" class="mt-2 text-muted"></div>
   `;
 
   quizContainer.querySelectorAll(".choiceBtn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+    btn.onclick = ()=>{
       const selected = parseInt(btn.dataset.index);
-      const explanationDiv = $("#explanation");
-      if(selected === q.answer){
-        btn.classList.replace("btn-outline-primary","btn-success");
+      const exp = document.getElementById("explanation");
+      if(selected===q.answer){
+        btn.className="btn btn-success btn-sm";
         score++;
-        explanationDiv.textContent = q.explanation ? `✅ ${q.explanation}` : "✅ Correct!";
+        exp.textContent = q.explanation ? `✅ ${q.explanation}` : "✅ Correct!";
       } else {
-        btn.classList.replace("btn-outline-primary","btn-danger");
-        explanationDiv.textContent = q.explanation ? `❌ ${q.explanation}` : "❌ Wrong!";
+        btn.className="btn btn-danger btn-sm";
+        exp.textContent = q.explanation ? `❌ ${q.explanation}` : "❌ Wrong!";
       }
       setTimeout(()=>{
         quizIndex++;
         renderQuizQuestion();
       },700);
-    });
+    };
   });
 }
 
-// ========================
+// =====================
 // Selector change
-// ========================
-learnSelector.addEventListener("change", ()=>{
+// =====================
+learnSelector.onchange = ()=>{
   loadLearnCapsule(learnSelector.value);
-});
+};
 
-// ========================
+// =====================
 // Initial load
-// ========================
-document.addEventListener("DOMContentLoaded", ()=>{
-  capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
-  if(capsules.length>0){
-    currentCapsule = capsules[0];
-  }
+// =====================
+document.addEventListener("DOMContentLoaded",()=>{
   populateLearnSelector();
 });
