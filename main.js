@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Main Script (Fixed Version)
+// Pocket Classroom - Main Script (Improved Version)
 // ===============================
 
 // Sections
@@ -22,7 +22,7 @@ let capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
 let currentCapsule = capsules.length > 0 ? capsules[0] : null;
 
 // ===============================
-// Section Control (SPA)
+// SPA Section Control
 // ===============================
 function showSection(section, saveHash = true) {
   librarySection.style.display = "none";
@@ -35,6 +35,10 @@ function showSection(section, saveHash = true) {
     else if (section === authorSection) window.location.hash = "#author";
     else if (section === learnSection) window.location.hash = "#learn";
   }
+
+  // Update UI after section change
+  if (section === authorSection && typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
+  if (section === learnSection && typeof updateLearnMode === "function") updateLearnMode(currentCapsule);
 }
 
 // Navbar click
@@ -85,6 +89,22 @@ function saveCapsule(capsule) {
   else capsules.push(capsule);
   saveCapsules();
   currentCapsule = capsule;
+
+  // Refresh UI
+  if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
+  if (typeof updateLearnMode === "function") updateLearnMode(currentCapsule);
+}
+
+// ===============================
+// Select Capsule
+// ===============================
+function setCurrentCapsule(id) {
+  const capsule = capsules.find(c => c.id === id);
+  if (capsule) {
+    currentCapsule = capsule;
+    if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
+    if (typeof updateLearnMode === "function") updateLearnMode(currentCapsule);
+  }
 }
 
 // ===============================
@@ -124,9 +144,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Update capsule references after loading
   capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
-  if (capsules.length > 0) currentCapsule = capsules[0];
-
-  // Trigger submodules if they exist
-  if (typeof loadAuthorForm === "function") loadAuthorForm();
-  if (typeof updateLearnMode === "function") updateLearnMode();
+  if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
 });
