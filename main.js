@@ -15,9 +15,21 @@ const navLinks = document.querySelectorAll(".nav-link");
 const themeToggle = document.getElementById("themeToggle");
 const body = document.body;
 
-// Capsules Array
+// ==============================
+// Capsules Array + currentCapsule
+// ==============================
 let capsules = JSON.parse(localStorage.getItem("pc_capsules")) || [];
-let currentCapsule = capsules.length > 0 ? capsules[0] : null;
+let lastCapsuleId = localStorage.getItem("pc_lastCapsule");
+let currentCapsule = lastCapsuleId 
+    ? capsules.find(c => c.id === lastCapsuleId) || capsules[0] 
+    : capsules[0] || null;
+
+// ==============================
+// Generate Unique ID
+// ==============================
+function generateId() {
+  return '_' + Math.random().toString(36).substr(2, 9);
+}
 
 // ==============================
 // SPA Section Control
@@ -72,23 +84,55 @@ function updateThemeButton() {
 themeToggle.addEventListener("click", toggleTheme);
 
 // ==============================
-// LocalStorage Save / Load Capsules
+// Save / Load Capsules
 // ==============================
 function saveCapsules() {
   localStorage.setItem("pc_capsules", JSON.stringify(capsules));
 }
 
-// Add / Update Capsule
 function saveCapsule(capsule) {
   const index = capsules.findIndex(c => c.id === capsule.id);
   if (index > -1) capsules[index] = capsule;
   else capsules.push(capsule);
   saveCapsules();
   currentCapsule = capsule;
+  localStorage.setItem("pc_lastCapsule", capsule.id);
 }
 
 // ==============================
-// Load Initial Section
+// Select Capsule
+// ==============================
+function selectCapsule(capsule) {
+  currentCapsule = capsule;
+  localStorage.setItem("pc_lastCapsule", capsule.id);
+  if (typeof loadAuthorForm === "function") loadAuthorForm();
+  if (typeof updateLearnMode === "function") updateLearnMode();
+}
+
+// ==============================
+// Create New Capsule
+// ==============================
+function createNewCapsule() {
+  const capsule = {
+    id: generateId(),
+    title: '',
+    subject: '',
+    level: 'Beginner',
+    description: '',
+    notes: [],
+    flashcards: [],
+    quiz: []
+  };
+  capsules.push(capsule);
+  currentCapsule = capsule;
+  saveCapsules();
+  localStorage.setItem("pc_lastCapsule", capsule.id);
+  if (typeof loadAuthorForm === "function") loadAuthorForm();
+  if (typeof updateLearnMode === "function") updateLearnMode();
+}
+
+// ==============================
+// Initial Load
 // ==============================
 document.addEventListener("DOMContentLoaded", () => {
   // Show last selected section based on hash
@@ -97,10 +141,11 @@ document.addEventListener("DOMContentLoaded", () => {
   else if (hash === "#learn") showSection(learnSection, false);
   else showSection(librarySection, false);
 
+  // Load Theme
   loadTheme();
 
-  // Set current capsule
-  if (capsules.length > 0) currentCapsule = capsules[0];
+  // Ensure currentCapsule is set
+  if (!currentCapsule && capsules.length > 0) currentCapsule = capsules[0];
 
   // Load Author Form & Learn Mode
   if (typeof loadAuthorForm === "function") loadAuthorForm();
