@@ -1,7 +1,10 @@
-// utils.js
+// ==============================
+// Pocket Classroom - utils.js
+// ==============================
 
 // جلوگیری از تزریق HTML
 function escapeHTML(str) {
+  if (typeof str !== "string") str = String(str || "");
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
@@ -27,11 +30,12 @@ function timeAgo(date) {
 function debounce(func, wait) {
   let timeout;
   return function(...args) {
+    const context = this;
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
+    timeout = setTimeout(() => func.apply(context, args), wait);
   };
 }
 
-// تابع ساده برای انتخابگر کوتاه
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
+// انتخابگر کوتاه
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
