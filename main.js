@@ -143,12 +143,73 @@ importBtn.addEventListener("click", ()=>{
   });
   input.click();
 });
+// ===============================
+// Library Rendering (Fix Section)
+// ===============================
+const capsuleGrid = document.getElementById("capsuleGrid");
+
+function renderLibrary() {
+  if (!capsuleGrid) return;
+  capsuleGrid.innerHTML = "";
+
+  if (capsules.length === 0) {
+    capsuleGrid.innerHTML = `<p class="text-muted">No capsules yet. Create one in Author section.</p>`;
+    return;
+  }
+
+  capsules.forEach(c => {
+    const card = document.createElement("div");
+    card.className = "card m-2 p-3 shadow-sm";
+
+    card.innerHTML = `
+      <h5>${c.title || "Untitled Capsule"}</h5>
+      <p class="mb-2 text-secondary">${c.subject || "No subject"}</p>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-primary edit-btn">Edit</button>
+        <button class="btn btn-sm btn-success learn-btn">Learn</button>
+        <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+      </div>
+    `;
+
+    // Button actions
+    card.querySelector(".edit-btn").addEventListener("click", () => {
+      setCurrentCapsule(c.id);
+      showSection(authorSection);
+    });
+
+    card.querySelector(".learn-btn").addEventListener("click", () => {
+      setCurrentCapsule(c.id);
+      showSection(learnSection);
+    });
+
+    card.querySelector(".delete-btn").addEventListener("click", () => {
+      if (confirm("Delete this capsule?")) {
+        capsules = capsules.filter(x => x.id !== c.id);
+        saveCapsules();
+        renderLibrary();
+      }
+    });
+
+    capsuleGrid.appendChild(card);
+  });
+}
 
 // ===============================
 // Initial Load
 // ===============================
 document.addEventListener("DOMContentLoaded", ()=>{
   loadTheme();
+  const hash = window.location.hash;
+  if (hash === "#author") showSection(authorSection);
+  else if (hash === "#learn") showSection(learnSection);
+  else showSection(librarySection);
+
+  capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
+  if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
+
+  renderLibrary(); // ✅ اضافه‌شده برای نمایش Library
+});
+  
 
   // Show section based on hash
   const hash = window.location.hash;
