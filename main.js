@@ -211,13 +211,4 @@ document.addEventListener("DOMContentLoaded", ()=>{
 });
   
 
-  // Show section based on hash
-  const hash = window.location.hash;
-  if (hash === "#author") showSection(authorSection);
-  else if (hash === "#learn") showSection(learnSection);
-  else showSection(librarySection);
-
-  // Ensure capsules are loaded
-  capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
-  if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
-});
+  
