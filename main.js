@@ -19,7 +19,9 @@ const body = document.body;
 let capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
 let currentCapsule = capsules.length > 0 ? capsules[0] : null;
 
+// ===============================
 // SPA Section Control
+// ===============================
 function showSection(section) {
   librarySection.style.display = "none";
   authorSection.style.display = "none";
@@ -41,7 +43,9 @@ navLinks.forEach(link => {
   });
 });
 
+// ===============================
 // Theme Handling
+// ===============================
 function loadTheme() {
   const saved = localStorage.getItem("pc_theme");
   if (saved) body.className = saved;
@@ -62,7 +66,9 @@ function updateThemeButton() {
 }
 themeToggle.addEventListener("click", toggleTheme);
 
+// ===============================
 // Save / Load Capsules
+// ===============================
 function saveCapsules() {
   localStorage.setItem("pc_capsules_index", JSON.stringify(capsules));
 
@@ -81,7 +87,9 @@ function saveCapsule(capsule) {
   currentCapsule = capsule;
 }
 
+// ===============================
 // Set Current Capsule
+// ===============================
 function setCurrentCapsule(id) {
   const capsule = capsules.find(c => c.id === id);
   if (capsule) {
@@ -91,7 +99,9 @@ function setCurrentCapsule(id) {
   }
 }
 
+// ===============================
 // Export / Import
+// ===============================
 const exportBtn = document.getElementById("exportBtn");
 exportBtn.addEventListener("click", ()=>{
   const dataStr = JSON.stringify(capsules, null, 2);
@@ -126,7 +136,8 @@ importBtn.addEventListener("click", ()=>{
         currentCapsule = capsules[capsules.length-1];
         saveCapsules();
         alert("Capsules imported successfully!");
-      } catch(err){ alert("Invalid JSON file."); }
+        showSection(authorSection);
+      } catch(err){ alert("Invalid JSON file."); console.error(err); }
     };
     reader.readAsText(file);
   });
@@ -181,6 +192,29 @@ function renderLibrary() {
     capsuleGrid.appendChild(card);
   });
 }
+
+// ===============================
+// New Capsule
+// ===============================
+newCapsuleBtn.addEventListener("click", () => {
+  const newCap = {
+    id: Date.now().toString(),
+    title: "",
+    subject: "",
+    level: "Beginner",
+    description: "",
+    notes: [],
+    flashcards: [],
+    quiz: []
+  };
+  capsules.push(newCap);
+  currentCapsule = newCap;
+
+  saveCapsules();       // Library بروزرسانی شود
+  loadAuthorForm();     // فرم Author پر شود
+  showSection(authorSection); // حتما Author نمایش داده شود
+  window.scrollTo(0, 0); // Scroll به بالا
+});
 
 // ===============================
 // Initial Load
