@@ -159,6 +159,80 @@ importBtn.addEventListener("click", ()=>{
 });
 
 // ===============================
+// Learn Mode Renderer
+// ===============================
+function updateLearnMode() {
+    if (!currentCapsule) return;
+
+    // Notes
+    const notesList = document.getElementById("notesList");
+    if (notesList) {
+        notesList.innerHTML = "";
+        (currentCapsule.notes || []).forEach(note => {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.innerText = note;
+            notesList.appendChild(li);
+        });
+    }
+
+    // Flashcards
+    const flashcardDisplay = document.getElementById("flashcardDisplay");
+    const prevCardBtn = document.getElementById("prevCardBtn");
+    const nextCardBtn = document.getElementById("nextCardBtn");
+    const flipCardBtn = document.getElementById("flipCardBtn");
+
+    let currentCardIndex = 0;
+    let showingAnswer = false;
+
+    function showFlashcard() {
+        if (!(currentCapsule.flashcards && currentCapsule.flashcards.length)) {
+            if(flashcardDisplay) flashcardDisplay.innerText = "No flashcards";
+            return;
+        }
+        const card = currentCapsule.flashcards[currentCardIndex];
+        if(flashcardDisplay) flashcardDisplay.innerText = showingAnswer ? card.answer : card.question;
+    }
+
+    showFlashcard();
+
+    if(flipCardBtn) flipCardBtn.onclick = () => { showingAnswer = !showingAnswer; showFlashcard(); };
+    if(prevCardBtn) prevCardBtn.onclick = () => {
+        if (!currentCapsule.flashcards.length) return;
+        currentCardIndex = (currentCardIndex - 1 + currentCapsule.flashcards.length) % currentCapsule.flashcards.length;
+        showingAnswer = false;
+        showFlashcard();
+    };
+    if(nextCardBtn) nextCardBtn.onclick = () => {
+        if (!currentCapsule.flashcards.length) return;
+        currentCardIndex = (currentCardIndex + 1) % currentCapsule.flashcards.length;
+        showingAnswer = false;
+        showFlashcard();
+    };
+
+    // Quiz
+    const quizContainer = document.getElementById("quizContainer");
+    if(quizContainer) {
+        quizContainer.innerHTML = "";
+        if (!(currentCapsule.quiz && currentCapsule.quiz.length)) {
+            quizContainer.innerHTML = "<p>No quiz questions</p>";
+        } else {
+            const q = currentCapsule.quiz[0]; // فقط سوال اول
+            quizContainer.innerHTML = `<p><strong>Q1:</strong> ${q.question}</p>`;
+            const div = document.createElement("div");
+            (q.options || []).forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "btn btn-outline-primary btn-sm me-2";
+                btn.innerText = opt;
+                btn.onclick = () => alert(opt === q.answer ? "✅ Correct!" : "❌ Wrong!");
+                div.appendChild(btn);
+            });
+            quizContainer.appendChild(div);
+        }
+    }
+}
+
+// ===============================
 // Initial Load
 // ===============================
 document.addEventListener("DOMContentLoaded", ()=>{
