@@ -159,8 +159,11 @@ importBtn.addEventListener("click", ()=>{
 });
 
 // ===============================
-// Learn Mode Renderer
+// Learn Mode Renderer (Fixed)
 // ===============================
+let currentCardIndex = 0;
+let showingAnswer = false;
+
 function updateLearnMode() {
     if (!currentCapsule) return;
 
@@ -182,29 +185,26 @@ function updateLearnMode() {
     const nextCardBtn = document.getElementById("nextCardBtn");
     const flipCardBtn = document.getElementById("flipCardBtn");
 
-    let currentCardIndex = 0;
-    let showingAnswer = false;
-
     function showFlashcard() {
         if (!(currentCapsule.flashcards && currentCapsule.flashcards.length)) {
             if(flashcardDisplay) flashcardDisplay.innerText = "No flashcards";
             return;
         }
         const card = currentCapsule.flashcards[currentCardIndex];
-        if(flashcardDisplay) flashcardDisplay.innerText = showingAnswer ? card.answer : card.question;
+        if(flashcardDisplay) flashcardDisplay.innerText = showingAnswer ? card.back : card.front;
     }
 
     showFlashcard();
 
     if(flipCardBtn) flipCardBtn.onclick = () => { showingAnswer = !showingAnswer; showFlashcard(); };
     if(prevCardBtn) prevCardBtn.onclick = () => {
-        if (!currentCapsule.flashcards.length) return;
+        if (!(currentCapsule.flashcards && currentCapsule.flashcards.length)) return;
         currentCardIndex = (currentCardIndex - 1 + currentCapsule.flashcards.length) % currentCapsule.flashcards.length;
         showingAnswer = false;
         showFlashcard();
     };
     if(nextCardBtn) nextCardBtn.onclick = () => {
-        if (!currentCapsule.flashcards.length) return;
+        if (!(currentCapsule.flashcards && currentCapsule.flashcards.length)) return;
         currentCardIndex = (currentCardIndex + 1) % currentCapsule.flashcards.length;
         showingAnswer = false;
         showFlashcard();
@@ -217,19 +217,31 @@ function updateLearnMode() {
         if (!(currentCapsule.quiz && currentCapsule.quiz.length)) {
             quizContainer.innerHTML = "<p>No quiz questions</p>";
         } else {
-            const q = currentCapsule.quiz[0]; // فقط سوال اول
-            quizContainer.innerHTML = `<p><strong>Q1:</strong> ${q.question}</p>`;
-            const div = document.createElement("div");
-            (q.options || []).forEach(opt => {
-                const btn = document.createElement("button");
-                btn.className = "btn btn-outline-primary btn-sm me-2";
-                btn.innerText = opt;
-                btn.onclick = () => alert(opt === q.answer ? "✅ Correct!" : "❌ Wrong!");
-                div.appendChild(btn);
+            currentCapsule.quiz.forEach((q, idx) => {
+                const card = document.createElement("div");
+                card.className = "mb-2";
+                card.innerHTML = `<p><strong>Q${idx+1}:</strong> ${q.question}</p>`;
+                const div = document.createElement("div");
+
+                (q.choices || []).forEach((choice, i) => {
+                    const btn = document.createElement("button");
+                    btn.className = "btn btn-outline-primary btn-sm me-2";
+                    btn.innerText = choice;
+                    btn.onclick = () => {
+                        if (i === q.answer) btn.classList.add("btn-success");
+                        else btn.classList.add("btn-danger");
+                    };
+                    div.appendChild(btn);
+                });
+
+                card.appendChild(div);
+                quizContainer.appendChild(card);
             });
-            quizContainer.appendChild(div);
         }
     }
+
+    // Selector
+    populateLearnSelector();
 }
 
 // ===============================
