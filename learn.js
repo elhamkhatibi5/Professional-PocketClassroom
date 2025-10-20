@@ -1,4 +1,3 @@
-
 // ==========================
 // learn.js - Learn Mode با هماهنگی Author Mode
 // ==========================
@@ -13,16 +12,8 @@ const flipCardBtn = document.getElementById("flipCardBtn");
 const quizContainer = document.getElementById("quizContainer");
 
 // وضعیت Learn Mode
-let capsules = loadCapsules(); // از utils.js
-if(capsules.length === 0){
-  // نمونه اولیه اگر LocalStorage خالی بود
-  capsules = [
-    {id:"capsule1", title:"نمونه", notes:[], flashcards:[], quiz:[]}
-  ];
-  saveCapsules(capsules);
-}
-
-let currentCapsule = capsules[0];
+let capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
+let currentCapsule = capsules[0] || null;
 let currentCardIndex = 0;
 let showingAnswer = false;
 let quizIndex = 0;
@@ -41,13 +32,14 @@ function populateLearnSelector(){
   });
   if(currentCapsule) learnSelector.value = currentCapsule.id;
 }
-populateLearnSelector();
 
 // ==========================
 // آپدیت Learn Mode
 // ==========================
 function updateLearnMode(){
-  capsules = loadCapsules(); // همیشه آخرین داده‌ها
+  // همگام سازی با LocalStorage
+  capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
+  currentCapsule = capsules.find(c => c.id === currentCapsule?.id) || capsules[0];
   if(!currentCapsule) return;
 
   // Notes
@@ -68,6 +60,9 @@ function updateLearnMode(){
   quizIndex = 0;
   score = 0;
   renderQuiz();
+
+  // Selector
+  populateLearnSelector();
 }
 
 // ==========================
