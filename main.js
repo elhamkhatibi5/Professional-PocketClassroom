@@ -30,16 +30,24 @@ function showSection(section) {
     learnSection.style.display = "none";
     section.style.display = "block";
 
+    // ذخیره آخرین بخش انتخاب شده
     localStorage.setItem("pc_lastSection", section.id);
 
+    // Update UI after section change
     if (section === authorSection && typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
 
     if (section === learnSection && typeof updateLearnMode === "function") {
         capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
         currentCapsule = capsules.find(c => c.id === currentCapsule?.id) || capsules[0];
 
-        if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
-        if(!currentCapsule.quiz) currentCapsule.quiz = [];
+        // اطمینان از وجود آرایه‌ها
+        if (!currentCapsule.flashcards) currentCapsule.flashcards = [];
+        if (!currentCapsule.quiz) currentCapsule.quiz = [];
+
+        // Selector همگام شود
+        populateLearnSelector();
+        const learnSelector = document.getElementById("learnSelector");
+        if (learnSelector) learnSelector.value = currentCapsule.id;
 
         updateLearnMode();
     }
@@ -85,7 +93,6 @@ themeToggle.addEventListener("click", toggleTheme);
 // ===============================
 function saveCapsules() {
     localStorage.setItem("pc_capsules_index", JSON.stringify(capsules));
-
     if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
     if (typeof populateLearnSelector === "function") populateLearnSelector();
     if (typeof updateLearnMode === "function") updateLearnMode();
@@ -154,7 +161,7 @@ importBtn.addEventListener("click", ()=>{
 });
 
 // ===============================
-// Learn Mode Renderer (Fixed)
+// Learn Mode Renderer (Fixed Full)
 // ===============================
 let currentCardIndex = 0;
 let showingAnswer = false;
@@ -223,11 +230,9 @@ function updateLearnMode() {
                     btn.className = "btn btn-outline-primary btn-sm me-2";
                     btn.innerText = choice;
                     btn.onclick = () => {
-                        // Reset all buttons
-                        const buttons = div.querySelectorAll("button");
-                        buttons.forEach(b => b.classList.remove("btn-success", "btn-danger"));
-
-                        // Highlight correct/incorrect
+                        // Correct / Wrong coloring
+                        const allBtns = div.querySelectorAll("button");
+                        allBtns.forEach(b => b.classList.remove("btn-success","btn-danger"));
                         if (i === q.answer) btn.classList.add("btn-success");
                         else btn.classList.add("btn-danger");
                     };
@@ -245,16 +250,40 @@ function updateLearnMode() {
 }
 
 // ===============================
+// Populate Learn Selector
+// ===============================
+function populateLearnSelector() {
+    const learnSelector = document.getElementById("learnSelector");
+    if(!learnSelector) return;
+    learnSelector.innerHTML = "";
+    capsules.forEach(c=>{
+        const option = document.createElement("option");
+        option.value = c.id;
+        option.textContent = c.title;
+        learnSelector.appendChild(option);
+    });
+    if(currentCapsule) learnSelector.value = currentCapsule.id;
+
+    learnSelector.onchange = ()=>{
+        const id = learnSelector.value;
+        currentCapsule = capsules.find(c => c.id === id);
+        updateLearnMode();
+    };
+}
+
+// ===============================
 // Initial Load
 // ===============================
 document.addEventListener("DOMContentLoaded", ()=>{
     loadTheme();
 
+    // نمایش آخرین بخش بعد از رفرش
     const lastSectionId = localStorage.getItem("pc_lastSection");
     if (lastSectionId === "author") showSection(authorSection);
     else if (lastSectionId === "learn") showSection(learnSection);
     else showSection(librarySection);
 
+    // Ensure capsules are loaded
     capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
     if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
 });
