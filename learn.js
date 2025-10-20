@@ -1,5 +1,7 @@
 
-// learn.js
+// ==========================
+// learn.js - Learn Mode Complete
+// ==========================
 
 // المان‌ها
 const learnNotes = document.getElementById("learn-notes");
@@ -13,10 +15,53 @@ const learnQuiz = document.getElementById("learn-quiz");
 const quizContainer = document.getElementById("quizContainer");
 const learnSelector = document.getElementById("learnSelector");
 
+// داده‌های نمونه
+let capsules = [
+  {
+    id: "capsule1",
+    title: "کپسول اول",
+    notes: ["یادداشت 1", "یادداشت 2"],
+    flashcards: [
+      { front: "سوال 1", back: "جواب 1" },
+      { front: "سوال 2", back: "جواب 2" }
+    ],
+    quiz: [
+      { question: "سوال کویز 1", choices: ["گزینه 1", "گزینه 2"], answer: 0 },
+      { question: "سوال کویز 2", choices: ["گزینه A", "گزینه B"], answer: 1 }
+    ]
+  },
+  {
+    id: "capsule2",
+    title: "کپسول دوم",
+    notes: ["یادداشت جدید"],
+    flashcards: [
+      { front: "سوال X", back: "جواب X" }
+    ],
+    quiz: [
+      { question: "سوال کویز دوم", choices: ["صحیح", "غلط"], answer: 0 }
+    ]
+  }
+];
+
+// متغیرهای وضعیت Learn Mode
+let currentCapsule = capsules[0];
 let currentIndex = 0;
 let showingFront = true;
+let quizIndex = 0;
+let score = 0;
 
-// آپدیت Learn Mode
+// پر کردن Selector
+capsules.forEach(c => {
+  const option = document.createElement("option");
+  option.value = c.id;
+  option.textContent = c.title;
+  learnSelector.appendChild(option);
+});
+learnSelector.value = currentCapsule.id;
+
+// ==========================
+// Update Learn Mode
+// ==========================
 function updateLearnMode() {
   if(!currentCapsule) {
     notesList.innerHTML = "";
@@ -39,11 +84,14 @@ function updateLearnMode() {
   renderFlashcard();
 
   // Quiz
-  quizContainer.innerHTML = "";
+  quizIndex = 0;
+  score = 0;
   renderQuizQuestion();
 }
 
+// ==========================
 // Flashcards
+// ==========================
 function renderFlashcard() {
   if(!currentCapsule.flashcards.length){
     flashcardDisplay.textContent = "No flashcards";
@@ -59,26 +107,26 @@ flipCardBtn.addEventListener("click", ()=>{
 });
 
 prevCardBtn.addEventListener("click", ()=>{
-  if(currentIndex>0) currentIndex--;
+  if(currentIndex > 0) currentIndex--;
   showingFront = true;
   renderFlashcard();
 });
 
 nextCardBtn.addEventListener("click", ()=>{
-  if(currentIndex<currentCapsule.flashcards.length-1) currentIndex++;
+  if(currentIndex < currentCapsule.flashcards.length-1) currentIndex++;
   showingFront = true;
   renderFlashcard();
 });
 
+// ==========================
 // Quiz
-let quizIndex = 0;
-let score = 0;
-
+// ==========================
 function renderQuizQuestion() {
   if(!currentCapsule.quiz.length){
     quizContainer.innerHTML = "<p>No quiz questions.</p>";
     return;
   }
+
   if(quizIndex >= currentCapsule.quiz.length){
     quizContainer.innerHTML = `<p>Quiz finished! Score: ${score}/${currentCapsule.quiz.length}</p>`;
     return;
@@ -109,11 +157,14 @@ function renderQuizQuestion() {
   });
 }
 
+// ==========================
 // تغییر کپسول از Selector
+// ==========================
 learnSelector.addEventListener("change", ()=>{
   const id = learnSelector.value;
   currentCapsule = capsules.find(c=>c.id===id);
-  quizIndex = 0;
-  score = 0;
   updateLearnMode();
 });
+
+// فراخوانی اولیه
+updateLearnMode();
