@@ -30,18 +30,14 @@ function showSection(section) {
     learnSection.style.display = "none";
     section.style.display = "block";
 
-    // ذخیره آخرین بخش انتخاب شده
     localStorage.setItem("pc_lastSection", section.id);
 
-    // Update UI after section change
     if (section === authorSection && typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
 
     if (section === learnSection && typeof updateLearnMode === "function") {
-        // همگام سازی currentCapsule با آخرین داده‌ها
         capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
         currentCapsule = capsules.find(c => c.id === currentCapsule?.id) || capsules[0];
 
-        // اطمینان از وجود آرایه‌های flashcards و quiz
         if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
         if(!currentCapsule.quiz) currentCapsule.quiz = [];
 
@@ -90,7 +86,6 @@ themeToggle.addEventListener("click", toggleTheme);
 function saveCapsules() {
     localStorage.setItem("pc_capsules_index", JSON.stringify(capsules));
 
-    // Refresh UI after save
     if (typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
     if (typeof populateLearnSelector === "function") populateLearnSelector();
     if (typeof updateLearnMode === "function") updateLearnMode();
@@ -228,6 +223,11 @@ function updateLearnMode() {
                     btn.className = "btn btn-outline-primary btn-sm me-2";
                     btn.innerText = choice;
                     btn.onclick = () => {
+                        // Reset all buttons
+                        const buttons = div.querySelectorAll("button");
+                        buttons.forEach(b => b.classList.remove("btn-success", "btn-danger"));
+
+                        // Highlight correct/incorrect
                         if (i === q.answer) btn.classList.add("btn-success");
                         else btn.classList.add("btn-danger");
                     };
@@ -250,13 +250,11 @@ function updateLearnMode() {
 document.addEventListener("DOMContentLoaded", ()=>{
     loadTheme();
 
-    // نمایش آخرین بخش بعد از رفرش
     const lastSectionId = localStorage.getItem("pc_lastSection");
     if (lastSectionId === "author") showSection(authorSection);
     else if (lastSectionId === "learn") showSection(learnSection);
     else showSection(librarySection);
 
-    // Ensure capsules are loaded
     capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
     if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
 });
