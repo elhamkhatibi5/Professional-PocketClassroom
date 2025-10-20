@@ -1,8 +1,8 @@
-// ==========================
-// learn.js - Learn Mode با هماهنگی Author Mode
-// ==========================
 
-// المان‌ها
+// ===============================
+// Pocket Classroom - Learn JS
+// ===============================
+
 const learnSelector = document.getElementById("learnSelector");
 const notesList = document.getElementById("notesList");
 const flashcardDisplay = document.getElementById("flashcardDisplay");
@@ -11,129 +11,136 @@ const nextCardBtn = document.getElementById("nextCardBtn");
 const flipCardBtn = document.getElementById("flipCardBtn");
 const quizContainer = document.getElementById("quizContainer");
 
-// وضعیت Learn Mode
-let capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
-let currentCapsule = capsules[0] || null;
-let currentCardIndex = 0;
-let showingAnswer = false;
-let quizIndex = 0;
-let score = 0;
+// Flashcard state
+let flashIndex = 0;
+let showingFront = true;
 
-// ==========================
-// پر کردن Selector
-// ==========================
+// =====================
+// Populate Learn Selector
+// =====================
 function populateLearnSelector(){
+  if(!learnSelector) return;
   learnSelector.innerHTML = "";
   capsules.forEach(c=>{
-    const option = document.createElement("option");
-    option.value = c.id;
-    option.textContent = c.title;
-    learnSelector.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = c.id;
+    opt.textContent = `${c.title} (${c.subject})`;
+    learnSelector.appendChild(opt);
   });
+
   if(currentCapsule) learnSelector.value = currentCapsule.id;
 }
 
-// ==========================
-// آپدیت Learn Mode
-// ==========================
+// =====================
+// Learn Selector Change
+// =====================
+learnSelector.addEventListener("change", ()=>{
+  const selectedId = learnSelector.value;
+  currentCapsule = capsules.find(c=>c.id===selectedId);
+  localStorage.setItem("pc_current_capsule", currentCapsule.id); // همگام با Main.js
+  flashIndex = 0;
+  showingFront = true;
+  updateLearnMode();
+});
+
+// =====================
+// Update Learn Mode
+// =====================
 function updateLearnMode(){
-  // همگام سازی با LocalStorage
-  capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
-  currentCapsule = capsules.find(c => c.id === currentCapsule?.id) || capsules[0];
   if(!currentCapsule) return;
 
   // Notes
   notesList.innerHTML = "";
-  currentCapsule.notes.forEach(note=>{
-    const li = document.createElement("li");
-    li.className = "list-group-item";
-    li.textContent = note;
-    notesList.appendChild(li);
-  });
+  if(currentCapsule.notes?.length){
+    currentCapsule.notes.forEach(n=>{
+      const li = document.createElement("li");
+      li.textContent = n;
+      li.className = "list-group-item";
+      notesList.appendChild(li);
+    });
+  } else {
+    notesList.innerHTML = "<li class='list-group-item text-warning'>No notes available.</li>";
+  }
 
   // Flashcards
-  currentCardIndex = 0;
-  showingAnswer = false;
-  showFlashcard();
+  flashIndex = 0;
+  showingFront = true;
+  renderFlashcard();
 
   // Quiz
-  quizIndex = 0;
-  score = 0;
   renderQuiz();
-
-  // Selector
-  populateLearnSelector();
 }
 
-// ==========================
+// =====================
 // Flashcards
-// ==========================
-function showFlashcard(){
-  if(!currentCapsule.flashcards.length){
-    flashcardDisplay.textContent = "No flashcards";
+// =====================
+function renderFlashcard(){
+  if(!currentCapsule.flashcards?.length){
+    flashcardDisplay.innerHTML = "<div class='alert alert-warning'>No flashcards available!</div>";
     return;
   }
-  const card = currentCapsule.flashcards[currentCardIndex];
-  flashcardDisplay.textContent = showingAnswer ? card.back : card.front;
+
+  const card = currentCapsule.flashcards[flashIndex];
+  flashcardDisplay.innerHTML = showingFront
+    ? `<strong>${escapeHTML(card.front)}</strong>`
+    : `<strong>${escapeHTML(card.back)}</strong>${card.explanation?`<br><em>${escapeHTML(card.explanation)}</em>`:""}`;
 }
 
-flipCardBtn.addEventListener("click", ()=>{
-  showingAnswer = !showingAnswer;
-  showFlashcard();
-});
+// Flashcard navigation
+nextCardBtn.onclick = ()=>{
+  if(!currentCapsule.flashcards?.length) return;
+  flashIndex = (flashIndex+1) % currentCapsule.flashcards.length;
+  showingFront = true;
+  renderFlashcard();
+};
 
-prevCardBtn.addEventListener("click", ()=>{
-  if(currentCardIndex > 0) currentCardIndex--;
-  showingAnswer = false;
-  showFlashcard();
-});
+prevCardBtn.onclick = ()=>{
+  if(!currentCapsule.flashcards?.length) return;
+  flashIndex = (flashIndex-1+currentCapsule.flashcards.length)%currentCapsule.flashcards.length;
+  showingFront = true;
+  renderFlashcard();
+};
 
-nextCardBtn.addEventListener("click", ()=>{
-  if(currentCardIndex < currentCapsule.flashcards.length-1) currentCardIndex++;
-  showingAnswer = false;
-  showFlashcard();
-});
+flipCardBtn.onclick = ()=>{
+  if(!currentCapsule.flashcards?.length) return;
+  showingFront = !showingFront;
+  renderFlashcard();
+};
 
-// ==========================
+// =====================
 // Quiz
-// ==========================
+// =====================
 function renderQuiz(){
-  quizContainer.innerHTML = "";
-  if(!currentCapsule.quiz.length){
-    quizContainer.innerHTML = "<p>No quiz questions</p>";
+  if(!currentCapsule.quiz?.length){
+    quizContainer.innerHTML = "<p class='text-warning'>No quiz questions.</p>";
     return;
   }
+  quizContainer.innerHTML = "";
 
-  currentCapsule.quiz.forEach((q,idx)=>{
-    const card = document.createElement("div");
-    card.className = "mb-2";
-    card.innerHTML = `<p><strong>Q${idx+1}:</strong> ${q.question}</p>`;
+  currentCapsule.quiz.forEach((q,i)=>{
     const div = document.createElement("div");
-    q.choices.forEach((choice,i)=>{
-      const btn = document.createElement("button");
-      btn.className = "btn btn-outline-primary btn-sm me-2";
-      btn.textContent = choice;
-      btn.addEventListener("click", ()=>{
-        if(i === q.answer) btn.classList.add("btn-success");
-        else btn.classList.add("btn-danger");
-      });
-      div.appendChild(btn);
-    });
-    card.appendChild(div);
-    quizContainer.appendChild(card);
+    div.className = "mb-3";
+    div.innerHTML = `
+      <p><strong>Q${i+1}: ${escapeHTML(q.question)}</strong></p>
+      <ul class="list-group">
+        ${q.choices.map((c,j)=>`<li class="list-group-item ${j===q.answer?'list-group-item-success':''}">${escapeHTML(c)}</li>`).join("")}
+      </ul>
+      ${q.explanation?`<p><em>${escapeHTML(q.explanation)}</em></p>`:""}
+    `;
+    quizContainer.appendChild(div);
   });
 }
 
-// ==========================
-// تغییر کپسول از Selector
-// ==========================
-learnSelector.addEventListener("change", ()=>{
-  const id = learnSelector.value;
-  currentCapsule = capsules.find(c => c.id === id);
+// =====================
+// Initial Load
+// =====================
+document.addEventListener("DOMContentLoaded", ()=>{
+  if(capsules.length > 0){
+    const lastId = localStorage.getItem("pc_current_capsule");
+    if(lastId) currentCapsule = capsules.find(c=>c.id===lastId);
+    if(!currentCapsule) currentCapsule = capsules[0];
+  }
+
+  populateLearnSelector();
   updateLearnMode();
 });
-
-// ==========================
-// فراخوانی اولیه
-// ==========================
-updateLearnMode();
