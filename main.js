@@ -30,21 +30,17 @@ function showSection(section) {
     learnSection.style.display = "none";
     section.style.display = "block";
 
-    // ذخیره آخرین بخش انتخاب شده
     localStorage.setItem("pc_lastSection", section.id);
 
-    // Update UI after section change
     if (section === authorSection && typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
 
     if (section === learnSection && typeof updateLearnMode === "function") {
         capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
         currentCapsule = capsules.find(c => c.id === currentCapsule?.id) || capsules[0];
 
-        // اطمینان از وجود آرایه‌ها
         if (!currentCapsule.flashcards) currentCapsule.flashcards = [];
         if (!currentCapsule.quiz) currentCapsule.quiz = [];
 
-        // Selector همگام شود
         populateLearnSelector();
         const learnSelector = document.getElementById("learnSelector");
         if (learnSelector) learnSelector.value = currentCapsule.id;
@@ -53,7 +49,6 @@ function showSection(section) {
     }
 }
 
-// Navbar click
 navLinks.forEach(link => {
     link.addEventListener("click", e => {
         e.preventDefault();
@@ -106,9 +101,6 @@ function saveCapsule(capsule) {
     currentCapsule = capsule;
 }
 
-// ===============================
-// Set Current Capsule
-// ===============================
 function setCurrentCapsule(id) {
     const capsule = capsules.find(c => c.id === id);
     if (capsule) {
@@ -161,7 +153,7 @@ importBtn.addEventListener("click", ()=>{
 });
 
 // ===============================
-// Learn Mode Renderer (Fixed Full)
+// Learn Mode Renderer
 // ===============================
 let currentCardIndex = 0;
 let showingAnswer = false;
@@ -193,7 +185,7 @@ function updateLearnMode() {
             return;
         }
         const card = currentCapsule.flashcards[currentCardIndex];
-        if(flashcardDisplay) flashcardDisplay.innerText = showingAnswer ? card.back : card.front;
+        if(flashcardDisplay) flashcardDisplay.innerText = showingAnswer ? card.answer : card.question;
     }
 
     showFlashcard();
@@ -277,13 +269,11 @@ function populateLearnSelector() {
 document.addEventListener("DOMContentLoaded", ()=>{
     loadTheme();
 
-    // نمایش آخرین بخش بعد از رفرش
     const lastSectionId = localStorage.getItem("pc_lastSection");
     if (lastSectionId === "author") showSection(authorSection);
     else if (lastSectionId === "learn") showSection(learnSection);
     else showSection(librarySection);
 
-    // Ensure capsules are loaded
     capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
     if (capsules.length > 0 && !currentCapsule) currentCapsule = capsules[0];
 });
