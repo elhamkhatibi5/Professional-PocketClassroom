@@ -1,80 +1,72 @@
 
 // ==========================
-// learn.js - Learn Mode Complete
+// learn.js - Learn Mode Corrected
 // ==========================
 
 // المان‌ها
-const learnNotes = document.getElementById("learn-notes");
+const learnSelector = document.getElementById("learnSelector");
 const notesList = document.getElementById("notesList");
-const learnFlashcards = document.getElementById("learn-flashcards");
 const flashcardDisplay = document.getElementById("flashcardDisplay");
 const prevCardBtn = document.getElementById("prevCardBtn");
 const nextCardBtn = document.getElementById("nextCardBtn");
 const flipCardBtn = document.getElementById("flipCardBtn");
-const learnQuiz = document.getElementById("learn-quiz");
 const quizContainer = document.getElementById("quizContainer");
-const learnSelector = document.getElementById("learnSelector");
 
-// داده‌های نمونه
-let capsules = [
-  {
-    id: "capsule1",
-    title: "کپسول اول",
-    notes: ["یادداشت 1", "یادداشت 2"],
-    flashcards: [
-      { front: "سوال 1", back: "جواب 1" },
-      { front: "سوال 2", back: "جواب 2" }
-    ],
-    quiz: [
-      { question: "سوال کویز 1", choices: ["گزینه 1", "گزینه 2"], answer: 0 },
-      { question: "سوال کویز 2", choices: ["گزینه A", "گزینه B"], answer: 1 }
-    ]
-  },
-  {
-    id: "capsule2",
-    title: "کپسول دوم",
-    notes: ["یادداشت جدید"],
-    flashcards: [
-      { front: "سوال X", back: "جواب X" }
-    ],
-    quiz: [
-      { question: "سوال کویز دوم", choices: ["صحیح", "غلط"], answer: 0 }
-    ]
-  }
-];
+// وضعیت Learn Mode
+let capsules = loadCapsules(); // از utils.js
+if(capsules.length === 0){
+  // اگر LocalStorage خالی بود، نمونه اولیه بساز
+  capsules = [
+    {
+      id: "capsule1",
+      title: "کپسول اول",
+      notes: ["یادداشت 1", "یادداشت 2"],
+      flashcards: [
+        { front: "سوال 1", back: "جواب 1" },
+        { front: "سوال 2", back: "جواب 2" }
+      ],
+      quiz: [
+        { question: "سوال کویز 1", choices: ["گزینه 1", "گزینه 2"], answer: 0 },
+        { question: "سوال کویز 2", choices: ["گزینه A", "گزینه B"], answer: 1 }
+      ]
+    }
+  ];
+  saveCapsules(capsules);
+}
 
-// متغیرهای وضعیت Learn Mode
 let currentCapsule = capsules[0];
 let currentIndex = 0;
 let showingFront = true;
 let quizIndex = 0;
 let score = 0;
 
+// ==========================
 // پر کردن Selector
-capsules.forEach(c => {
-  const option = document.createElement("option");
-  option.value = c.id;
-  option.textContent = c.title;
-  learnSelector.appendChild(option);
-});
-learnSelector.value = currentCapsule.id;
+// ==========================
+function populateLearnSelector(){
+  learnSelector.innerHTML = "";
+  capsules.forEach(c=>{
+    const option = document.createElement("option");
+    option.value = c.id;
+    option.textContent = c.title;
+    learnSelector.appendChild(option);
+  });
+  if(currentCapsule) learnSelector.value = currentCapsule.id;
+}
+populateLearnSelector();
 
 // ==========================
 // Update Learn Mode
 // ==========================
-function updateLearnMode() {
-  if(!currentCapsule) {
-    notesList.innerHTML = "";
-    flashcardDisplay.textContent = "Select a capsule";
-    quizContainer.innerHTML = "";
-    return;
-  }
+function updateLearnMode(){
+  if(!currentCapsule) return;
 
   // Notes
   notesList.innerHTML = "";
-  currentCapsule.notes.forEach(note => {
+  currentCapsule.notes.forEach(note=>{
     const li = document.createElement("li");
     li.textContent = note;
+    li.className = "list-group-item";
     notesList.appendChild(li);
   });
 
@@ -92,7 +84,7 @@ function updateLearnMode() {
 // ==========================
 // Flashcards
 // ==========================
-function renderFlashcard() {
+function renderFlashcard(){
   if(!currentCapsule.flashcards.length){
     flashcardDisplay.textContent = "No flashcards";
     return;
@@ -121,7 +113,7 @@ nextCardBtn.addEventListener("click", ()=>{
 // ==========================
 // Quiz
 // ==========================
-function renderQuizQuestion() {
+function renderQuizQuestion(){
   if(!currentCapsule.quiz.length){
     quizContainer.innerHTML = "<p>No quiz questions.</p>";
     return;
@@ -162,9 +154,11 @@ function renderQuizQuestion() {
 // ==========================
 learnSelector.addEventListener("change", ()=>{
   const id = learnSelector.value;
-  currentCapsule = capsules.find(c=>c.id===id);
+  currentCapsule = capsules.find(c => c.id === id); 
   updateLearnMode();
 });
 
+// ==========================
 // فراخوانی اولیه
+// ==========================
 updateLearnMode();
