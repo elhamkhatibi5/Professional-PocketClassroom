@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Learn JS (Final & Fixed)
+// Pocket Classroom - Learn JS (Fixed Quiz with Green/Red Answers)
 // ===============================
 
 const learnSelector = document.getElementById("learnSelector");
@@ -112,22 +112,58 @@ flipCardBtn.onclick = ()=>{
 // Quiz
 // =====================
 function renderQuiz(){
+  quizContainer.innerHTML = "";
   if(!currentCapsule.quiz.length){
     quizContainer.innerHTML = "<p class='text-warning'>No quiz questions.</p>";
     return;
   }
-  quizContainer.innerHTML = "";
 
-  currentCapsule.quiz.forEach((q,i)=>{
+  // Take first 3 questions
+  const questions = currentCapsule.quiz.slice(0,3);
+
+  questions.forEach((q,i)=>{
     const div = document.createElement("div");
-    div.className = "mb-3";
-    div.innerHTML = `
-      <p><strong>Q${i+1}: ${escapeHTML(q.question)}</strong></p>
-      <ul class="list-group">
-        ${q.choices.map((c,j)=>`<li class="list-group-item ${j===q.correctIndex?'list-group-item-success':''}">${escapeHTML(c)}</li>`).join("")}
-      </ul>
-      ${q.explanation?`<p><em>${escapeHTML(q.explanation)}</em></p>`:""}
-    `;
+    div.className = "mb-3 card p-2 shadow-sm";
+    
+    const p = document.createElement("p");
+    p.innerHTML = `<strong>Q${i+1}: ${escapeHTML(q.question)}</strong>`;
+    div.appendChild(p);
+
+    const ul = document.createElement("ul");
+    ul.className = "list-group";
+    
+    q.choices.forEach((choice,j)=>{
+      const li = document.createElement("li");
+      li.className = "list-group-item list-group-item-action";
+      li.textContent = choice;
+
+      li.addEventListener("click", ()=>{
+        // Disable all choices after click
+        Array.from(ul.children).forEach(c=>{
+          c.style.pointerEvents = "none";
+        });
+
+        // Mark correct/incorrect
+        if(j === q.correctIndex){
+          li.classList.add("list-group-item-success");
+        } else {
+          li.classList.add("list-group-item-danger");
+          // Optionally highlight correct answer
+          ul.children[q.correctIndex].classList.add("list-group-item-success");
+        }
+      });
+
+      ul.appendChild(li);
+    });
+
+    div.appendChild(ul);
+
+    if(q.explanation){
+      const expl = document.createElement("p");
+      expl.innerHTML = `<em>${escapeHTML(q.explanation)}</em>`;
+      div.appendChild(expl);
+    }
+
     quizContainer.appendChild(div);
   });
 }
