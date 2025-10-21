@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Learn JS
+// Pocket Classroom - Learn JS (Fixed)
 // ===============================
 
 const learnSelector = document.getElementById("learnSelector");
@@ -21,10 +21,17 @@ let showingFront = true;
 function populateLearnSelector(){
   if(!learnSelector) return;
   learnSelector.innerHTML = "";
+
   capsules.forEach(c=>{
+    // مقادیر پیش‌فرض
+    if(!c.title || c.title.trim()==="") c.title = "کپسول بدون عنوان";
+    if(!c.notes) c.notes = [];
+    if(!c.flashcards) c.flashcards = [];
+    if(!c.quiz) c.quiz = [];
+
     const opt = document.createElement("option");
     opt.value = c.id;
-    opt.textContent = `${c.title} (${c.subject})`;
+    opt.textContent = c.title + (c.subject ? ` (${c.subject})` : "");
     learnSelector.appendChild(opt);
   });
 
@@ -49,9 +56,15 @@ learnSelector.addEventListener("change", ()=>{
 function updateLearnMode(){
   if(!currentCapsule) return;
 
+  // مطمئن شدن از مقادیر پیش‌فرض
+  if(!currentCapsule.title || currentCapsule.title.trim()==="") currentCapsule.title = "کپسول بدون عنوان";
+  if(!currentCapsule.notes) currentCapsule.notes = [];
+  if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
+  if(!currentCapsule.quiz) currentCapsule.quiz = [];
+
   // Notes
   notesList.innerHTML = "";
-  if(currentCapsule.notes?.length){
+  if(currentCapsule.notes.length){
     currentCapsule.notes.forEach(n=>{
       const li = document.createElement("li");
       li.textContent = n;
@@ -75,7 +88,7 @@ function updateLearnMode(){
 // Flashcards
 // =====================
 function renderFlashcard(){
-  if(!currentCapsule.flashcards?.length){
+  if(!currentCapsule.flashcards.length){
     flashcardDisplay.innerHTML = "<div class='alert alert-warning'>No flashcards available!</div>";
     return;
   }
@@ -88,21 +101,21 @@ function renderFlashcard(){
 
 // Flashcard navigation
 nextCardBtn.onclick = ()=>{
-  if(!currentCapsule.flashcards?.length) return;
+  if(!currentCapsule.flashcards.length) return;
   flashIndex = (flashIndex+1) % currentCapsule.flashcards.length;
   showingFront = true;
   renderFlashcard();
 };
 
 prevCardBtn.onclick = ()=>{
-  if(!currentCapsule.flashcards?.length) return;
+  if(!currentCapsule.flashcards.length) return;
   flashIndex = (flashIndex-1+currentCapsule.flashcards.length)%currentCapsule.flashcards.length;
   showingFront = true;
   renderFlashcard();
 };
 
 flipCardBtn.onclick = ()=>{
-  if(!currentCapsule.flashcards?.length) return;
+  if(!currentCapsule.flashcards.length) return;
   showingFront = !showingFront;
   renderFlashcard();
 };
@@ -111,7 +124,7 @@ flipCardBtn.onclick = ()=>{
 // Quiz
 // =====================
 function renderQuiz(){
-  if(!currentCapsule.quiz?.length){
+  if(!currentCapsule.quiz.length){
     quizContainer.innerHTML = "<p class='text-warning'>No quiz questions.</p>";
     return;
   }
