@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Learn JS (Fixed)
+// Pocket Classroom - Learn JS (Final & Fixed)
 // ===============================
 
 const learnSelector = document.getElementById("learnSelector");
@@ -23,12 +23,6 @@ function populateLearnSelector(){
   learnSelector.innerHTML = "";
 
   capsules.forEach(c=>{
-    // مقادیر پیش‌فرض
-    if(!c.title || c.title.trim()==="") c.title = "کپسول بدون عنوان";
-    if(!c.notes) c.notes = [];
-    if(!c.flashcards) c.flashcards = [];
-    if(!c.quiz) c.quiz = [];
-
     const opt = document.createElement("option");
     opt.value = c.id;
     opt.textContent = c.title + (c.subject ? ` (${c.subject})` : "");
@@ -44,7 +38,7 @@ function populateLearnSelector(){
 learnSelector.addEventListener("change", ()=>{
   const selectedId = learnSelector.value;
   currentCapsule = capsules.find(c=>c.id===selectedId);
-  localStorage.setItem("pc_current_capsule", currentCapsule.id); // همگام با Main.js
+  localStorage.setItem("pc_current_capsule", currentCapsule.id);
   flashIndex = 0;
   showingFront = true;
   updateLearnMode();
@@ -55,12 +49,6 @@ learnSelector.addEventListener("change", ()=>{
 // =====================
 function updateLearnMode(){
   if(!currentCapsule) return;
-
-  // مطمئن شدن از مقادیر پیش‌فرض
-  if(!currentCapsule.title || currentCapsule.title.trim()==="") currentCapsule.title = "کپسول بدون عنوان";
-  if(!currentCapsule.notes) currentCapsule.notes = [];
-  if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
-  if(!currentCapsule.quiz) currentCapsule.quiz = [];
 
   // Notes
   notesList.innerHTML = "";
@@ -136,12 +124,24 @@ function renderQuiz(){
     div.innerHTML = `
       <p><strong>Q${i+1}: ${escapeHTML(q.question)}</strong></p>
       <ul class="list-group">
-        ${q.choices.map((c,j)=>`<li class="list-group-item ${j===q.answer?'list-group-item-success':''}">${escapeHTML(c)}</li>`).join("")}
+        ${q.choices.map((c,j)=>`<li class="list-group-item ${j===q.correctIndex?'list-group-item-success':''}">${escapeHTML(c)}</li>`).join("")}
       </ul>
       ${q.explanation?`<p><em>${escapeHTML(q.explanation)}</em></p>`:""}
     `;
     quizContainer.appendChild(div);
   });
+}
+
+// =====================
+// Utility: Escape HTML
+// =====================
+function escapeHTML(str){
+  if(!str) return "";
+  return str.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 }
 
 // =====================
