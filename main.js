@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Main.js (Fixed Display)
+// Pocket Classroom - Main.js (Fixed Display + 4 default capsules)
 // ===============================
 
 // Sections
@@ -47,7 +47,6 @@ function showSection(section){
     }
   }
 
-  // ذخیره بخش فعلی
   if(section === librarySection) currentSection = "library";
   else if(section === authorSection) currentSection = "author";
   else if(section === learnSection) currentSection = "learn";
@@ -170,6 +169,78 @@ importBtn.addEventListener("click", ()=>{
 });
 
 // ===============================
+// Default 4 Capsules
+// ===============================
+function createDefaultCapsules(){
+  return [
+    {
+      id: "c1",
+      title: "Algebra Basics",
+      subject: "Math",
+      level: "Beginner",
+      description: "Learn fundamental algebra concepts including variables, equations, and functions.",
+      notes: ["Variables and expressions", "Solving equations", "Slope and intercept"],
+      flashcards: [
+        { front: "What is x in 2x+3=7?", back: "x=2" },
+        { front: "Formula for slope?", back: "(y2-y1)/(x2-x1)" }
+      ],
+      quiz: [
+        { question: "Solve: 5x - 10 = 0", choices: ["x=0","x=1","x=2","x=3"], correctIndex: 2 }
+      ],
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: "c2",
+      title: "Human Anatomy Overview",
+      subject: "Biology",
+      level: "Beginner",
+      description: "Learn the major systems of the human body and their functions.",
+      notes: ["Skeletal system","Muscular system","Circulatory system"],
+      flashcards: [
+        { front: "Largest organ?", back: "Skin" },
+        { front: "Function of red blood cells?", back: "Carry oxygen" }
+      ],
+      quiz: [
+        { question: "Which organ pumps blood?", choices: ["Lungs","Heart","Liver","Kidney"], correctIndex: 1 }
+      ],
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: "c3",
+      title: "Python Programming",
+      subject: "Programming",
+      level: "Beginner",
+      description: "Learn Python fundamentals: variables, loops, functions, and data structures.",
+      notes: ["Variables and types","For/while loops","Functions","Lists and dicts"],
+      flashcards: [
+        { front: "Print function?", back: "print()" },
+        { front: "Keyword to define function?", back: "def" }
+      ],
+      quiz: [
+        { question: "Python list method to add element?", choices: ["append","push","insert","add"], correctIndex: 0 }
+      ],
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: "c4",
+      title: "Ancient Civilizations",
+      subject: "History",
+      level: "Intermediate",
+      description: "Explore the key ancient civilizations and their cultural, political, and technological achievements.",
+      notes: ["Mesopotamia","Egypt","Greece","Rome"],
+      flashcards: [
+        { front: "Who built the Pyramids?", back: "Ancient Egyptians" },
+        { front: "Famous Mesopotamian invention?", back: "Cuneiform writing" }
+      ],
+      quiz: [
+        { question: "Which civilization invented the wheel?", choices: ["Egyptians","Sumerians","Romans","Greeks"], correctIndex: 1 }
+      ],
+      updatedAt: new Date().toISOString()
+    }
+  ];
+}
+
+// ===============================
 // Initial Load
 // ===============================
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -177,13 +248,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
 
-  // ⚡ Fix: Ensure all capsules have required fields
-  capsules.forEach(c=>{
-    if(!c.title || c.title.trim()==="") c.title = "کپسول بدون عنوان";
-    if(!c.notes) c.notes = [];
-    if(!c.flashcards) c.flashcards = [];
-    if(!c.quiz) c.quiz = [];
-  });
+  // ⚡ اگر LocalStorage خالی بود، ۴ کپسول واقعی بساز
+  if(capsules.length === 0){
+    capsules = createDefaultCapsules();
+    saveCapsules();
+  }
 
   const lastId = localStorage.getItem("pc_current_capsule");
   if(lastId) currentCapsule = capsules.find(c=>c.id===lastId);
@@ -192,7 +261,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
   if(typeof populateLearnSelector === "function") populateLearnSelector();
   if(typeof updateLearnMode === "function") updateLearnMode();
 
-  // باز کردن بخش آخرین بازدید
   if(currentSection === "author") showSection(authorSection);
   else if(currentSection === "learn") showSection(learnSection);
   else showSection(librarySection);
