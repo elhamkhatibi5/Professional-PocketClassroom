@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Library JS
+// Pocket Classroom - Library JS (Fixed)
 // ===============================
 
 const capsuleGrid = document.getElementById("capsuleGrid");
@@ -11,6 +11,15 @@ const searchCapsule = document.getElementById("searchCapsule");
 // Render Library
 function renderLibrary(filter = "") {
   capsuleGrid.innerHTML = "";
+
+  // اصلاح مقادیر پیش‌فرض
+  capsules.forEach(c => {
+    if(!c.title || c.title.trim() === "") c.title = "کپسول بدون عنوان";
+    if(!c.notes) c.notes = [];
+    if(!c.flashcards) c.flashcards = [];
+    if(!c.quiz) c.quiz = [];
+  });
+
   capsules
     .filter(c => c.title.toLowerCase().includes(filter.toLowerCase()))
     .forEach(c => {
@@ -60,6 +69,12 @@ function renderLibrary(filter = "") {
 function populateLearnSelector() {
   learnSelector.innerHTML = "";
   capsules.forEach(c => {
+    // اصلاح مقادیر پیش‌فرض
+    if(!c.title || c.title.trim() === "") c.title = "کپسول بدون عنوان";
+    if(!c.notes) c.notes = [];
+    if(!c.flashcards) c.flashcards = [];
+    if(!c.quiz) c.quiz = [];
+
     const opt = document.createElement("option");
     opt.value = c.id;
     opt.textContent = c.title;
