@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Main.js (Final Sync)
+// Pocket Classroom - Main.js (Fixed Display)
 // ===============================
 
 // Sections
@@ -176,6 +176,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
   loadTheme();
 
   capsules = JSON.parse(localStorage.getItem("pc_capsules_index")) || [];
+
+  // ⚡ Fix: Ensure all capsules have required fields
+  capsules.forEach(c=>{
+    if(!c.title || c.title.trim()==="") c.title = "کپسول بدون عنوان";
+    if(!c.notes) c.notes = [];
+    if(!c.flashcards) c.flashcards = [];
+    if(!c.quiz) c.quiz = [];
+  });
 
   const lastId = localStorage.getItem("pc_current_capsule");
   if(lastId) currentCapsule = capsules.find(c=>c.id===lastId);
