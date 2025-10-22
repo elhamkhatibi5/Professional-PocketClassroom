@@ -3,7 +3,7 @@
 Base Theme
 ============================= */
 body.light-mode {
-  background-color: #f0f4f8;
+  background-color: #f8f9fa;
   color: #212529;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -14,16 +14,15 @@ body.dark-mode {
 }
 
 /* =============================
-Navbar Gradient & Hover
+Navbar
 ============================= */
 .navbar {
-  background: linear-gradient(90deg, #2196f3, #64b5f6);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  background-color: #333; /* رنگ ثابت ملایم */
 }
 
 .navbar .nav-link {
   cursor: pointer;
-  transition: color 0.3s, transform 0.2s;
+  transition: color 0.2s, transform 0.2s;
   color: #f8f9fa;
   font-weight: 500;
 }
@@ -38,10 +37,10 @@ Capsule Cards
 ============================= */
 .capsule-card {
   border-radius: 0.75rem;
-  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
   padding: 1rem;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  background-color: #fff; /* رنگ ثابت لایت مود */
   color: #212529;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
@@ -49,16 +48,11 @@ Capsule Cards
 .capsule-card:hover {
   transform: translateY(-4px) scale(1.03);
   box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-  background: linear-gradient(135deg, #bbdefb, #90caf9);
 }
 
 body.dark-mode .capsule-card {
-  background: linear-gradient(135deg, #1c2833, #33475b);
+  background-color: #1e1e1e; /* کارت ها در دارک مود تیره */
   color: #f1f1f1;
-}
-
-body.dark-mode .capsule-card:hover {
-  background: linear-gradient(135deg, #33475b, #1c2833);
 }
 
 /* =============================
@@ -77,25 +71,24 @@ Flashcards
   font-weight: 500;
   line-height: 1.4;
   user-select: none;
-  background: linear-gradient(135deg, #e1f5fe, #b3e5fc);
+  background-color: #fff; /* کارت ها در لایت مود سفید */
   color: #212529;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  transition: transform 0.25s, background 0.35s, color 0.3s, box-shadow 0.3s;
+  transition: transform 0.25s, box-shadow 0.3s;
 }
 
 .flashcard:hover {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-  background: linear-gradient(135deg, #b3e5fc, #81d4fa);
 }
 
 body.dark-mode .flashcard {
-  background: linear-gradient(135deg, #1e2a38, #2c3e50);
+  background-color: #1e1e1e; /* کارت ها در دارک مود تیره */
   color: #f1f1f1;
 }
 
 body.dark-mode .flashcard:hover {
-  background: linear-gradient(135deg, #2c3e50, #1e2a38);
+  box-shadow: 0 6px 18px rgba(255,255,255,0.15);
 }
 
 /* =============================
@@ -151,7 +144,7 @@ Notes / Quiz List
 Footer
 ============================= */
 footer {
-  background: linear-gradient(90deg, #bbdefb, #e3f2fd);
+  background-color: #f0f0f0; /* رنگ لایت مود */
   color: #212529;
   padding: 1rem 0;
   text-align: center;
@@ -161,9 +154,9 @@ footer {
 }
 
 body.dark-mode footer {
-  background: linear-gradient(90deg, #33475b, #1c2833);
-  color: #f1f1f1;
-  border-top: 1px solid #33475b;
+  background-color: #1e1e1e; /* رنگ دارک مود */
+  color: #f1f1f1;           /* متن کاملاً خوانا */
+  border-top: 1px solid #333;
 }
 
 /* =============================
@@ -174,7 +167,7 @@ html, body {
 }
 
 main {
-  min-height: calc(100vh - 80px); /* برای navbar + footer */
+  min-height: calc(100vh - 80px); /* navbar + footer */
   padding-bottom: 2rem;
 }
 
