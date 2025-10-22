@@ -3,8 +3,9 @@
 Base Theme
 ============================= */
 body.light-mode {
-  background-color: #f8f9fa;
+  background-color: #f0f4f8;
   color: #212529;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body.dark-mode {
@@ -13,60 +14,88 @@ body.dark-mode {
 }
 
 /* =============================
-Navbar
+Navbar Gradient & Hover
 ============================= */
+.navbar {
+  background: linear-gradient(90deg, #2196f3, #64b5f6);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
 .navbar .nav-link {
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.3s, transform 0.2s;
+  color: #f8f9fa;
+  font-weight: 500;
 }
+
 .navbar .nav-link:hover {
-  color: #ffc107;
+  color: #ffeb3b; /* زرد ملایم */
+  transform: scale(1.05);
 }
 
 /* =============================
 Capsule Cards
 ============================= */
 .capsule-card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 0.75rem;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
   cursor: pointer;
-  border-radius: 0.5rem;
-  overflow: hidden;
+  padding: 1rem;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #212529;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
+
 .capsule-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #bbdefb, #90caf9);
+}
+
+body.dark-mode .capsule-card {
+  background: linear-gradient(135deg, #1c2833, #33475b);
+  color: #f1f1f1;
+}
+
+body.dark-mode .capsule-card:hover {
+  background: linear-gradient(135deg, #33475b, #1c2833);
 }
 
 /* =============================
-Flashcards (حرفه‌ای‌تر و کوچک‌تر)
+Flashcards
 ============================= */
 .flashcard {
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 1.2rem 1rem;
   cursor: pointer;
-  min-width: 180px;  /* کمی کوچک‌تر */
-  min-height: 90px;  /* جمع و جورتر */
+  min-width: 180px;
+  min-height: 90px;
   max-width: 300px;
-  max-height: 150px;
-  font-size: 0.95rem;
   text-align: center;
-  line-height: 1.3;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
   user-select: none;
-  background-color: #fff;
-  color: #000;
-  transition: background-color 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #e1f5fe, #b3e5fc);
+  color: #212529;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.25s, background 0.35s, color 0.3s, box-shadow 0.3s;
 }
+
 .flashcard:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  background: linear-gradient(135deg, #b3e5fc, #81d4fa);
 }
 
 body.dark-mode .flashcard {
-  background-color: #1e1e1e;
+  background: linear-gradient(135deg, #1e2a38, #2c3e50);
   color: #f1f1f1;
-  box-shadow: 0 2px 8px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .flashcard:hover {
+  background: linear-gradient(135deg, #2c3e50, #1e2a38);
 }
 
 /* =============================
@@ -74,16 +103,36 @@ Inputs
 ============================= */
 .list-group-item input {
   margin-bottom: 0.3rem;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+  padding: 0.25rem 0.5rem;
+  transition: border 0.3s;
+}
+
+.list-group-item input:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+
+body.dark-mode .list-group-item input {
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+  border-color: #555;
 }
 
 /* =============================
 Buttons
 ============================= */
 button {
-  transition: transform 0.1s;
+  transition: transform 0.1s, box-shadow 0.2s;
 }
+
 button:active {
   transform: scale(0.97);
+}
+
+button:hover {
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
 /* =============================
@@ -92,21 +141,64 @@ Notes / Quiz List
 #notesList li {
   margin-bottom: 0.3rem;
 }
+
 #quizContainer button {
   width: 100%;
+  border-radius: 0.5rem;
 }
 
 /* =============================
 Footer
 ============================= */
 footer {
-  margin-top: auto; /* همیشه پایین صفحه */
+  background: linear-gradient(90deg, #bbdefb, #e3f2fd);
+  color: #212529;
+  padding: 1rem 0;
   text-align: center;
-  padding: 1rem;
-  color: #212529; /* متن برای لایت مود */
-  background: transparent;
+  font-size: 0.9rem;
+  border-top: 1px solid #ccc;
+  position: relative;
 }
 
 body.dark-mode footer {
-  color: #f1f1f1; /* متن روشن در دارک مود */
+  background: linear-gradient(90deg, #33475b, #1c2833);
+  color: #f1f1f1;
+  border-top: 1px solid #33475b;
+}
+
+/* =============================
+Layout Fixes
+============================= */
+html, body {
+  height: 100%;
+}
+
+main {
+  min-height: calc(100vh - 80px); /* برای navbar + footer */
+  padding-bottom: 2rem;
+}
+
+/* =============================
+Flashcard Layout Improvements
+============================= */
+#learn-flashcards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flashcard {
+  margin: 0.5rem 0;
+}
+
+/* =============================
+Responsive
+============================= */
+@media (max-width: 768px) {
+  .capsule-card, .flashcard {
+    min-width: 150px;
+    min-height: 80px;
+    padding: 1rem;
+    font-size: 0.85rem;
+  }
 }
