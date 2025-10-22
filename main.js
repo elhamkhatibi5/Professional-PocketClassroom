@@ -21,6 +21,10 @@ let currentCapsule = null;
 let flashIndex = 0;
 let showingFront = true;
 
+// ✅ Make them global so learn.js can access them
+window.capsules = capsules;
+window.currentCapsule = currentCapsule;
+
 // ===============================
 // SPA Section Control
 // ===============================
@@ -95,6 +99,10 @@ function saveCapsules(){
   localStorage.setItem("pc_capsules_index", JSON.stringify(capsules));
   if(currentCapsule) localStorage.setItem("pc_current_capsule", currentCapsule.id);
 
+  // ✅ Keep globals updated
+  window.capsules = capsules;
+  window.currentCapsule = currentCapsule;
+
   if(typeof loadAuthorForm === "function") loadAuthorForm(currentCapsule);
   if(typeof populateLearnSelector === "function") populateLearnSelector();
   if(typeof updateLearnMode === "function") updateLearnMode();
@@ -116,6 +124,7 @@ function setCurrentCapsule(id){
   if(!capsule) return;
 
   currentCapsule = capsule;
+  window.currentCapsule = capsule; // ✅ global sync
   localStorage.setItem("pc_current_capsule", capsule.id);
 
   if(typeof populateLearnSelector === "function") populateLearnSelector();
@@ -257,6 +266,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
   const lastId = localStorage.getItem("pc_current_capsule");
   if(lastId) currentCapsule = capsules.find(c=>c.id===lastId);
   if(!currentCapsule && capsules.length>0) currentCapsule = capsules[0];
+
+  // ✅ Sync globals
+  window.capsules = capsules;
+  window.currentCapsule = currentCapsule;
 
   if(typeof populateLearnSelector === "function") populateLearnSelector();
   if(typeof updateLearnMode === "function") updateLearnMode();
