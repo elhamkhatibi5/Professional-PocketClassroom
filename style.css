@@ -5,7 +5,6 @@ Base Theme
 body.light-mode {
   background-color: #f8f9fa;
   color: #212529;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body.dark-mode {
@@ -14,22 +13,22 @@ body.dark-mode {
 }
 
 /* =============================
+Main Layout
+============================= */
+main {
+  min-height: calc(100vh - 70px); /* فاصله از نوار بالا */
+  padding-bottom: 3rem; /* فاصله برای فوتر */
+}
+
+/* =============================
 Navbar
 ============================= */
-.navbar {
-  background-color: #333; /* رنگ ثابت ملایم */
-}
-
 .navbar .nav-link {
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
-  color: #f8f9fa;
-  font-weight: 500;
+  transition: color 0.2s;
 }
-
 .navbar .nav-link:hover {
-  color: #ffeb3b; /* زرد ملایم */
-  transform: scale(1.05);
+  color: #0dcaf0; /* آبی روشن برای هاور */
 }
 
 /* =============================
@@ -40,19 +39,22 @@ Capsule Cards
   transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
   padding: 1rem;
-  background-color: #fff; /* رنگ ثابت لایت مود */
+  background-color: #fff;
   color: #212529;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.capsule-card:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  flex: 1 1 250px;
+  margin: 0.5rem;
+  text-align: center;
 }
 
 body.dark-mode .capsule-card {
-  background-color: #1e1e1e; /* کارت ها در دارک مود تیره */
-  color: #f1f1f1;
+  background-color: #1f1f1f;
+  color: #ffffff;
+}
+
+.capsule-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 /* =============================
@@ -61,34 +63,30 @@ Flashcards
 .flashcard {
   border: none;
   border-radius: 0.75rem;
-  padding: 1.2rem 1rem;
+  padding: 1.5rem 1rem;
   cursor: pointer;
-  min-width: 180px;
-  min-height: 90px;
-  max-width: 300px;
+  min-width: 220px;
+  max-width: 320px;
+  min-height: 120px;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.4;
   user-select: none;
-  background-color: #fff; /* کارت ها در لایت مود سفید */
+  background-color: #fff;
   color: #212529;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   transition: transform 0.25s, box-shadow 0.3s;
+  margin: 0.5rem auto;
 }
 
 .flashcard:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  transform: scale(1.03);
 }
 
 body.dark-mode .flashcard {
-  background-color: #1e1e1e; /* کارت ها در دارک مود تیره */
-  color: #f1f1f1;
-}
-
-body.dark-mode .flashcard:hover {
-  box-shadow: 0 6px 18px rgba(255,255,255,0.15);
+  background-color: #1e1e1e;
+  color: #ffffff;
 }
 
 /* =============================
@@ -96,36 +94,16 @@ Inputs
 ============================= */
 .list-group-item input {
   margin-bottom: 0.3rem;
-  border-radius: 0.4rem;
-  border: 1px solid #ccc;
-  padding: 0.25rem 0.5rem;
-  transition: border 0.3s;
-}
-
-.list-group-item input:focus {
-  outline: none;
-  border-color: #2196f3;
-}
-
-body.dark-mode .list-group-item input {
-  background-color: #1e1e1e;
-  color: #f1f1f1;
-  border-color: #555;
 }
 
 /* =============================
 Buttons
 ============================= */
 button {
-  transition: transform 0.1s, box-shadow 0.2s;
+  transition: transform 0.1s;
 }
-
 button:active {
   transform: scale(0.97);
-}
-
-button:hover {
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
 /* =============================
@@ -134,64 +112,54 @@ Notes / Quiz List
 #notesList li {
   margin-bottom: 0.3rem;
 }
-
 #quizContainer button {
   width: 100%;
-  border-radius: 0.5rem;
 }
 
 /* =============================
 Footer
 ============================= */
 footer {
-  background-color: #f0f0f0; /* رنگ لایت مود */
+  background-color: #f1f1f1;
   color: #212529;
-  padding: 1rem 0;
+  padding: 1rem;
   text-align: center;
-  font-size: 0.9rem;
-  border-top: 1px solid #ccc;
   position: relative;
+  bottom: 0;
+  width: 100%;
 }
 
 body.dark-mode footer {
-  background-color: #1e1e1e; /* رنگ دارک مود */
-  color: #f1f1f1;           /* متن کاملاً خوانا */
-  border-top: 1px solid #333;
+  background-color: #1e1e1e;
+  color: #ffffff;
 }
 
 /* =============================
-Layout Fixes
+Card Grid for Library
 ============================= */
-html, body {
-  height: 100%;
-}
-
-main {
-  min-height: calc(100vh - 80px); /* navbar + footer */
-  padding-bottom: 2rem;
-}
-
-/* =============================
-Flashcard Layout Improvements
-============================= */
-#learn-flashcards {
+#capsuleGrid {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.flashcard {
-  margin: 0.5rem 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 /* =============================
-Responsive
+Learn Section
+============================= */
+#learn-notes, #learn-flashcards, #learn-quiz {
+  margin-bottom: 2rem;
+}
+
+/* =============================
+Responsive Adjustments
 ============================= */
 @media (max-width: 768px) {
-  .capsule-card, .flashcard {
-    min-width: 150px;
-    min-height: 80px;
-    padding: 1rem;
-    font-size: 0.85rem;
+  .capsule-card {
+    flex: 1 1 100%;
+  }
+  .flashcard {
+    min-width: 180px;
+    max-width: 280px;
   }
 }
