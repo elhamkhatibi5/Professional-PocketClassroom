@@ -3,163 +3,85 @@
 Base Theme
 ============================= */
 body.light-mode {
-  background-color: #f8f9fa;
-  color: #212529;
+background-color: #f8f9fa;
+color: #212529;
 }
 
 body.dark-mode {
-  background-color: #121212;
-  color: #f1f1f1;
-}
-
-/* =============================
-Main Layout
-============================= */
-main {
-  min-height: calc(100vh - 70px); /* فاصله از نوار بالا */
-  padding-bottom: 3rem; /* فاصله برای فوتر */
+background-color: #121212;
+color: #f1f1f1;
 }
 
 /* =============================
 Navbar
 ============================= */
 .navbar .nav-link {
-  cursor: pointer;
-  transition: color 0.2s;
+cursor: pointer;
+transition: color 0.2s;
 }
 .navbar .nav-link:hover {
-  color: #0dcaf0; /* آبی روشن برای هاور */
+color: #ffc107;
 }
 
 /* =============================
 Capsule Cards
 ============================= */
 .capsule-card {
-  border-radius: 0.75rem;
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  padding: 1rem;
-  background-color: #fff;
-  color: #212529;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  flex: 1 1 250px;
-  margin: 0.5rem;
-  text-align: center;
+transition: transform 0.2s, box-shadow 0.2s;
+cursor: pointer;
 }
-
-body.dark-mode .capsule-card {
-  background-color: #1f1f1f;
-  color: #ffffff;
-}
-
 .capsule-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+transform: translateY(-3px);
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* =============================
 Flashcards
 ============================= */
 .flashcard {
-  border: none;
-  border-radius: 0.75rem;
-  padding: 1.5rem 1rem;
-  cursor: pointer;
-  min-width: 220px;
-  max-width: 320px;
-  min-height: 120px;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.4;
-  user-select: none;
-  background-color: #fff;
-  color: #212529;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  transition: transform 0.25s, box-shadow 0.3s;
-  margin: 0.5rem auto;
+border: 1px solid #ccc;
+border-radius: 0.5rem;
+padding: 2rem;
+cursor: pointer;
+min-width: 200px;
+min-height: 100px;
+user-select: none;
+background-color: #fff;
+color: #000;
+transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
-
 .flashcard:hover {
-  transform: scale(1.03);
+transform: scale(1.03);
 }
 
 body.dark-mode .flashcard {
-  background-color: #1e1e1e;
-  color: #ffffff;
+background-color: #1e1e1e;
+color: #f1f1f1;
 }
 
 /* =============================
 Inputs
 ============================= */
 .list-group-item input {
-  margin-bottom: 0.3rem;
+margin-bottom: 0.3rem;
 }
 
 /* =============================
 Buttons
 ============================= */
 button {
-  transition: transform 0.1s;
+transition: transform 0.1s;
 }
 button:active {
-  transform: scale(0.97);
+transform: scale(0.97);
 }
 
 /* =============================
 Notes / Quiz List
 ============================= */
 #notesList li {
-  margin-bottom: 0.3rem;
+margin-bottom: 0.3rem;
 }
 #quizContainer button {
-  width: 100%;
-}
-
-/* =============================
-Footer
-============================= */
-footer {
-  background-color: #f1f1f1;
-  color: #212529;
-  padding: 1rem;
-  text-align: center;
-  position: relative;
-  bottom: 0;
-  width: 100%;
-}
-
-body.dark-mode footer {
-  background-color: #1e1e1e;
-  color: #ffffff;
-}
-
-/* =============================
-Card Grid for Library
-============================= */
-#capsuleGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-/* =============================
-Learn Section
-============================= */
-#learn-notes, #learn-flashcards, #learn-quiz {
-  margin-bottom: 2rem;
-}
-
-/* =============================
-Responsive Adjustments
-============================= */
-@media (max-width: 768px) {
-  .capsule-card {
-    flex: 1 1 100%;
-  }
-  .flashcard {
-    min-width: 180px;
-    max-width: 280px;
-  }
-}
+width: 100%;
+} 
