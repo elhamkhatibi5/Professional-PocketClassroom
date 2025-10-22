@@ -7,7 +7,7 @@ body.light-mode {
   color: #212529;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; /* برای فوتر پایین */
 }
 
 body.dark-mode {
@@ -26,7 +26,7 @@ Navbar
   transition: color 0.2s;
 }
 .navbar .nav-link:hover {
-  color: #42a5f5; /* جذاب‌تر و هماهنگ با پالت آموزشی */
+  color: #ffc107;
 }
 
 /* =============================
@@ -36,32 +36,27 @@ Capsule Cards
   transition: transform 0.25s, box-shadow 0.25s;
   cursor: pointer;
   padding: 1rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #d0e8ff, #d0ffd8); /* gradient سبک */
+  border-radius: 0.8rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .capsule-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,150,136,0.25);
-}
-body.dark-mode .capsule-card {
-  background: linear-gradient(135deg, #1b2c44, #1b442c);
-  color: #e8faff;
-  box-shadow: 0 6px 15px rgba(0,255,200,0.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 
 /* =============================
 Flashcards
 ============================= */
 .flashcard {
+  border: 1px solid #ccc;
   border-radius: 0.75rem;
   padding: 2rem;
   cursor: pointer;
   min-width: 200px;
-  min-height: 120px;
+  min-height: 100px;
   user-select: none;
-  background: linear-gradient(160deg, #fff7e6, #e6fff4);
-  color: #212529;
+  background-color: #fff;
+  color: #000;
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   align-items: center;
@@ -70,10 +65,10 @@ Flashcards
 }
 .flashcard:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 128, 128, 0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 body.dark-mode .flashcard {
-  background: linear-gradient(160deg, #2a2f3a, #1e3b33);
+  background-color: #1e1e1e;
   color: #f1f1f1;
 }
 
@@ -83,7 +78,6 @@ Inputs
 .list-group-item input {
   margin-bottom: 0.3rem;
   border-radius: 0.4rem;
-  border: 1px solid #ccc;
   padding: 0.3rem 0.5rem;
 }
 
@@ -91,7 +85,7 @@ Inputs
 Buttons
 ============================= */
 button {
-  transition: transform 0.1s, background-color 0.2s;
+  transition: transform 0.1s;
 }
 button:active {
   transform: scale(0.97);
@@ -102,42 +96,19 @@ Notes / Quiz List
 ============================= */
 #notesList li {
   margin-bottom: 0.3rem;
-  padding: 0.5rem 0.8rem;
+  padding: 0.4rem 0.6rem;
   border-radius: 0.5rem;
-  background-color: #f0f7ff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
-body.dark-mode #notesList li {
-  background-color: #1f2a36;
-  color: #e0f7ff;
-}
-
 #quizContainer button {
   width: 100%;
-  margin-bottom: 0.3rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(135deg, #d0e8ff, #d0ffd8);
-  border: none;
-  color: #212529;
-  font-weight: 500;
-}
-body.dark-mode #quizContainer button {
-  background: linear-gradient(135deg, #1b2c44, #1b442c);
-  color: #f1f1f1;
 }
 
 /* =============================
 Footer
 ============================= */
 footer {
-  margin-top: auto; /* این باعث می‌شود فوتر همیشه پایین بماند */
+  margin-top: auto; /* همیشه پایین صفحه */
   text-align: center;
   padding: 1rem;
-  font-size: 0.875rem;
-  color: #fff;
-  background: linear-gradient(90deg, #1e88e5, #43a047);
-  border-top: 1px solid #ccc;
-}
-body.dark-mode footer {
-  background: linear-gradient(90deg, #1565c0, #2e7d32);
-  color: #f1f1f1;
 }
