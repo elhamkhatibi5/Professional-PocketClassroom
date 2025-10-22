@@ -1,117 +1,137 @@
 
-// ===============================
-// Pocket Classroom - Library JS (Fixed)
-// ===============================
-
-const capsuleGrid = document.getElementById("capsuleGrid");
-const newCapsuleBtn = document.getElementById("newCapsuleBtn");
-const learnSelector = document.getElementById("learnSelector");
-const searchCapsule = document.getElementById("searchCapsule");
-
-// Render Library
-function renderLibrary(filter = "") {
-  capsuleGrid.innerHTML = "";
-
-  // اصلاح مقادیر پیش‌فرض
-  capsules.forEach(c => {
-    if(!c.title || c.title.trim() === "") c.title = "کپسول بدون عنوان";
-    if(!c.notes) c.notes = [];
-    if(!c.flashcards) c.flashcards = [];
-    if(!c.quiz) c.quiz = [];
-  });
-
-  capsules
-    .filter(c => c.title.toLowerCase().includes(filter.toLowerCase()))
-    .forEach(c => {
-      const div = document.createElement("div");
-      div.className = "col-md-4";
-      div.innerHTML = `
-        <div class="card capsule-card shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">${escapeHTML(c.title)}</h5>
-            <p class="card-text text-muted">${escapeHTML(c.description)}</p>
-            <span class="badge ${c.level==="Beginner"?"bg-success":c.level==="Intermediate"?"bg-warning":"bg-danger"}">
-              ${c.level}
-            </span>
-            <div class="mt-3 text-end">
-              <button class="btn btn-outline-primary btn-sm learnBtn"><i class="bi bi-play-circle"></i> Learn</button>
-              <button class="btn btn-outline-secondary btn-sm editBtn"><i class="bi bi-pencil"></i></button>
-              <button class="btn btn-outline-danger btn-sm delBtn"><i class="bi bi-trash"></i></button>
-            </div>
-          </div>
-        </div>`;
-      capsuleGrid.appendChild(div);
-
-      // Learn button
-      div.querySelector(".learnBtn").addEventListener("click", () => {
-        setCurrentCapsule(c.id);
-        showSection(learnSection);
-      });
-
-      // Edit button
-      div.querySelector(".editBtn").addEventListener("click", () => {
-        setCurrentCapsule(c.id);
-        showSection(authorSection);
-      });
-
-      // Delete button
-      div.querySelector(".delBtn").addEventListener("click", () => {
-        if (confirm(`Delete ${c.title}?`)) {
-          capsules = capsules.filter(cp => cp.id !== c.id);
-          saveCapsules();
-          renderLibrary(searchCapsule.value);
-        }
-      });
-  });
+/* =============================
+Base Theme
+============================= */
+body.light-mode {
+  background-color: #f8f9fa;
+  color: #212529;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-// Learn Selector
-function populateLearnSelector() {
-  learnSelector.innerHTML = "";
-  capsules.forEach(c => {
-    // اصلاح مقادیر پیش‌فرض
-    if(!c.title || c.title.trim() === "") c.title = "کپسول بدون عنوان";
-    if(!c.notes) c.notes = [];
-    if(!c.flashcards) c.flashcards = [];
-    if(!c.quiz) c.quiz = [];
+body.dark-mode {
+  background-color: #121212;
+  color: #f1f1f1;
+}
 
-    const opt = document.createElement("option");
-    opt.value = c.id;
-    opt.textContent = c.title;
-    learnSelector.appendChild(opt);
-  });
+/* =============================
+Navbar
+============================= */
+.navbar {
+  background-color: #333;
+}
 
-  if (capsules.length > 0) {
-    const selectedId = currentCapsule ? currentCapsule.id : capsules[0].id;
-    learnSelector.value = selectedId;
+.navbar .nav-link {
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  color: #f8f9fa;
+  font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+  color: #ffeb3b;
+  transform: scale(1.05);
+}
+
+/* =============================
+Capsule Cards
+============================= */
+.capsule-card {
+  border-radius: 0.75rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  padding: 1rem;
+  background-color: #fff;
+  color: #212529;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.capsule-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+body.dark-mode .capsule-card {
+  background-color: #1f1f1f;
+  color: #ffffff; /* متن سفید روشن */
+}
+
+/* =============================
+Flashcards
+============================= */
+.flashcard {
+  border: none;
+  border-radius: 0.75rem;
+  padding: 1.2rem 1rem;
+  cursor: pointer;
+  min-width: 180px;
+  min-height: 90px;
+  max-width: 300px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  user-select: none;
+  background-color: #fff;
+  color: #212529;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.25s, box-shadow 0.3s;
+}
+
+.flashcard:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+body.dark-mode .flashcard {
+  background-color: #1e1e1e;
+  color: #ffffff; /* متن سفید کامل برای خوانایی بالا */
+}
+
+body.dark-mode .flashcard:hover {
+  box-shadow: 0 6px 18px rgba(255,255,255,0.15);
+}
+
+/* =============================
+Footer
+============================= */
+footer {
+  background-color: #f0f0f0;
+  color: #212529;
+  padding: 1rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  border-top: 1px solid #ccc;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+body.dark-mode footer {
+  background-color: #1a1a1a; /* کمی روشن‌تر از پس‌زمینه اصلی */
+  color: #ffffff;            /* متن سفید واضح */
+  border-top: 1px solid #333;
+}
+
+/* =============================
+Layout Fixes
+============================= */
+html, body {
+  height: 100%;
+}
+
+main {
+  min-height: calc(100vh - 80px);
+  padding-bottom: 2rem;
+}
+
+/* =============================
+Responsive
+============================= */
+@media (max-width: 768px) {
+  .capsule-card, .flashcard {
+    min-width: 150px;
+    min-height: 80px;
+    padding: 1rem;
+    font-size: 0.85rem;
   }
-}
-
-// New Capsule
-newCapsuleBtn.addEventListener("click", () => {
-  const newCap = {
-    id: Date.now().toString(),
-    title: "New Capsule",
-    subject: "General",
-    level: "Beginner",
-    description: "",
-    notes: [],
-    flashcards: [],
-    quiz: []
-  };
-  capsules.push(newCap);
-  currentCapsule = newCap;
-  saveCapsules();
-  renderLibrary();
-  populateLearnSelector();
-  showSection(authorSection);
-});
-
-// Search
-searchCapsule.addEventListener("input", debounce(() => renderLibrary(searchCapsule.value), 300));
-
-// Initial Render
-document.addEventListener("DOMContentLoaded", () => {
-  renderLibrary();
-  populateLearnSelector();
-});
+    }
