@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Learn JS (Flashcard Quiz + Green/Red)
+// Pocket Classroom - Learn JS (Final Fixed Quiz + Green/Red Answers)
 // ===============================
 
 const learnSelector = document.getElementById("learnSelector");
@@ -12,7 +12,7 @@ const flipCardBtn = document.getElementById("flipCardBtn");
 const quizContainer = document.getElementById("quizContainer");
 
 // Flashcard state
-let flashIndexLearn = 0;
+let flashIndex = 0;
 let showingFront = true;
 
 // =====================
@@ -22,14 +22,14 @@ function populateLearnSelector(){
   if(!learnSelector) return;
   learnSelector.innerHTML = "";
 
-  window.capsules.forEach(c=>{
+  capsules.forEach(c=>{
     const opt = document.createElement("option");
     opt.value = c.id;
     opt.textContent = c.title + (c.subject ? ` (${c.subject})` : "");
     learnSelector.appendChild(opt);
   });
 
-  if(window.currentCapsule) learnSelector.value = window.currentCapsule.id;
+  if(currentCapsule) learnSelector.value = currentCapsule.id;
 }
 
 // =====================
@@ -37,9 +37,9 @@ function populateLearnSelector(){
 // =====================
 learnSelector.addEventListener("change", ()=>{
   const selectedId = learnSelector.value;
-  window.currentCapsule = window.capsules.find(c=>c.id===selectedId);
-  localStorage.setItem("pc_current_capsule", window.currentCapsule.id);
-  flashIndexLearn = 0;
+  currentCapsule = capsules.find(c=>c.id===selectedId);
+  localStorage.setItem("pc_current_capsule", currentCapsule.id);
+  flashIndex = 0;
   showingFront = true;
   updateLearnMode();
 });
@@ -48,12 +48,12 @@ learnSelector.addEventListener("change", ()=>{
 // Update Learn Mode
 // =====================
 function updateLearnMode(){
-  if(!window.currentCapsule) return;
+  if(!currentCapsule) return;
 
   // Notes
   notesList.innerHTML = "";
-  if(window.currentCapsule.notes.length){
-    window.currentCapsule.notes.forEach(n=>{
+  if(currentCapsule.notes && currentCapsule.notes.length){
+    currentCapsule.notes.forEach(n=>{
       const li = document.createElement("li");
       li.textContent = n;
       li.className = "list-group-item";
@@ -64,7 +64,7 @@ function updateLearnMode(){
   }
 
   // Flashcards
-  flashIndexLearn = 0;
+  flashIndex = 0;
   showingFront = true;
   renderFlashcard();
 
@@ -76,81 +76,55 @@ function updateLearnMode(){
 // Flashcards
 // =====================
 function renderFlashcard(){
-  if(!window.currentCapsule.flashcards.length){
+  if(!currentCapsule.flashcards || !currentCapsule.flashcards.length){
     flashcardDisplay.innerHTML = "<div class='alert alert-warning'>No flashcards available!</div>";
     return;
   }
 
-  const card = window.currentCapsule.flashcards[flashIndexLearn];
-
-  // Card content
-  flashcardDisplay.innerHTML = `<strong>${showingFront ? escapeHTML(card.front) : escapeHTML(card.back)}</strong>`;
-
-  // Add choices if back has "options"
-  if(!showingFront && card.choices && card.correctIndex != null){
-    const ul = document.createElement("ul");
-    ul.className = "list-group mt-2";
-
-    card.choices.forEach((c,j)=>{
-      const li = document.createElement("li");
-      li.className = "list-group-item list-group-item-action";
-      li.textContent = c;
-
-      li.addEventListener("click", ()=>{
-        Array.from(ul.children).forEach(child => child.style.pointerEvents = "none");
-
-        if(j === card.correctIndex){
-          li.classList.add("list-group-item-success");
-        } else {
-          li.classList.add("list-group-item-danger");
-          ul.children[card.correctIndex].classList.add("list-group-item-success");
-        }
-      });
-
-      ul.appendChild(li);
-    });
-
-    flashcardDisplay.appendChild(ul);
-  }
+  const card = currentCapsule.flashcards[flashIndex];
+  flashcardDisplay.innerHTML = showingFront
+    ? `<strong>${escapeHTML(card.front)}</strong>`
+    : `<strong>${escapeHTML(card.back)}</strong>${card.explanation?`<br><em>${escapeHTML(card.explanation)}</em>`:""}`;
 }
 
 // Flashcard navigation
 nextCardBtn.onclick = ()=>{
-  if(!window.currentCapsule.flashcards.length) return;
-  flashIndexLearn = (flashIndexLearn + 1) % window.currentCapsule.flashcards.length;
+  if(!currentCapsule.flashcards.length) return;
+  flashIndex = (flashIndex+1) % currentCapsule.flashcards.length;
   showingFront = true;
   renderFlashcard();
 };
 
 prevCardBtn.onclick = ()=>{
-  if(!window.currentCapsule.flashcards.length) return;
-  flashIndexLearn = (flashIndexLearn - 1 + window.currentCapsule.flashcards.length) % window.currentCapsule.flashcards.length;
+  if(!currentCapsule.flashcards.length) return;
+  flashIndex = (flashIndex-1+currentCapsule.flashcards.length)%currentCapsule.flashcards.length;
   showingFront = true;
   renderFlashcard();
 };
 
 flipCardBtn.onclick = ()=>{
-  if(!window.currentCapsule.flashcards.length) return;
+  if(!currentCapsule.flashcards.length) return;
   showingFront = !showingFront;
   renderFlashcard();
 };
 
 // =====================
-// Quiz
+// Quiz (✅ Fixed Answer Key + Colors)
 // =====================
 function renderQuiz(){
   quizContainer.innerHTML = "";
-  if(!window.currentCapsule.quiz.length){
+  if(!currentCapsule.quiz || !currentCapsule.quiz.length){
     quizContainer.innerHTML = "<p class='text-warning'>No quiz questions.</p>";
     return;
   }
 
-  const questions = window.currentCapsule.quiz.slice(0,3);
+  // Take first 3 questions only
+  const questions = currentCapsule.quiz.slice(0,3);
 
   questions.forEach((q,i)=>{
     const div = document.createElement("div");
     div.className = "mb-3 card p-2 shadow-sm";
-
+    
     const p = document.createElement("p");
     p.innerHTML = `<strong>Q${i+1}: ${escapeHTML(q.question)}</strong>`;
     div.appendChild(p);
@@ -158,19 +132,25 @@ function renderQuiz(){
     const ul = document.createElement("ul");
     ul.className = "list-group";
 
+    // ✅ Fixed key: works with 'answer' or 'correctIndex'
+    const correctIndex = (typeof q.correctIndex === "number") ? q.correctIndex : q.answer;
+
     q.choices.forEach((choice,j)=>{
       const li = document.createElement("li");
       li.className = "list-group-item list-group-item-action";
       li.textContent = choice;
 
       li.addEventListener("click", ()=>{
-        Array.from(ul.children).forEach(c=> c.style.pointerEvents = "none");
+        Array.from(ul.children).forEach(c=>{
+          c.style.pointerEvents = "none";
+        });
 
-        if(j === q.correctIndex){
+        if(j === correctIndex){
           li.classList.add("list-group-item-success");
         } else {
           li.classList.add("list-group-item-danger");
-          ul.children[q.correctIndex].classList.add("list-group-item-success");
+          if(ul.children[correctIndex])
+            ul.children[correctIndex].classList.add("list-group-item-success");
         }
       });
 
@@ -190,7 +170,7 @@ function renderQuiz(){
 }
 
 // =====================
-// Utility
+// Utility: Escape HTML
 // =====================
 function escapeHTML(str){
   if(!str) return "";
@@ -205,10 +185,10 @@ function escapeHTML(str){
 // Initial Load
 // =====================
 document.addEventListener("DOMContentLoaded", ()=>{
-  if(window.capsules.length > 0){
+  if(capsules.length > 0){
     const lastId = localStorage.getItem("pc_current_capsule");
-    if(lastId) window.currentCapsule = window.capsules.find(c=>c.id===lastId);
-    if(!window.currentCapsule) window.currentCapsule = window.capsules[0];
+    if(lastId) currentCapsule = capsules.find(c=>c.id===lastId);
+    if(!currentCapsule) currentCapsule = capsules[0];
   }
 
   populateLearnSelector();
