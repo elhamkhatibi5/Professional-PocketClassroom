@@ -1,8 +1,9 @@
 
 // ===============================
-// Pocket Classroom - Learn JS (Final Fixed Quiz + Green/Red Answers)
+// Pocket Classroom - Learn.js (Fixed for Main.js)
 // ===============================
 
+// Elements
 const learnSelector = document.getElementById("learnSelector");
 const notesList = document.getElementById("notesList");
 const flashcardDisplay = document.getElementById("flashcardDisplay");
@@ -19,10 +20,15 @@ let showingFront = true;
 // Populate Learn Selector
 // =====================
 function populateLearnSelector(){
-  if(!learnSelector) return;
+  if(!learnSelector || !capsules) return;
   learnSelector.innerHTML = "";
 
   capsules.forEach(c=>{
+    if(!c.title || c.title.trim() === "") c.title = "Capsule without title";
+    if(!c.notes) c.notes = [];
+    if(!c.flashcards) c.flashcards = [];
+    if(!c.quiz) c.quiz = [];
+
     const opt = document.createElement("option");
     opt.value = c.id;
     opt.textContent = c.title + (c.subject ? ` (${c.subject})` : "");
@@ -35,14 +41,17 @@ function populateLearnSelector(){
 // =====================
 // Learn Selector Change
 // =====================
-learnSelector.addEventListener("change", ()=>{
-  const selectedId = learnSelector.value;
-  currentCapsule = capsules.find(c=>c.id===selectedId);
-  localStorage.setItem("pc_current_capsule", currentCapsule.id);
-  flashIndex = 0;
-  showingFront = true;
-  updateLearnMode();
-});
+if(learnSelector){
+  learnSelector.addEventListener("change", ()=>{
+    const selectedId = learnSelector.value;
+    currentCapsule = capsules.find(c => c.id === selectedId);
+    localStorage.setItem("pc_current_capsule", currentCapsule.id);
+
+    flashIndex = 0;
+    showingFront = true;
+    updateLearnMode();
+  });
+}
 
 // =====================
 // Update Learn Mode
@@ -50,9 +59,13 @@ learnSelector.addEventListener("change", ()=>{
 function updateLearnMode(){
   if(!currentCapsule) return;
 
+  if(!currentCapsule.notes) currentCapsule.notes = [];
+  if(!currentCapsule.flashcards) currentCapsule.flashcards = [];
+  if(!currentCapsule.quiz) currentCapsule.quiz = [];
+
   // Notes
   notesList.innerHTML = "";
-  if(currentCapsule.notes && currentCapsule.notes.length){
+  if(currentCapsule.notes.length){
     currentCapsule.notes.forEach(n=>{
       const li = document.createElement("li");
       li.textContent = n;
@@ -76,7 +89,7 @@ function updateLearnMode(){
 // Flashcards
 // =====================
 function renderFlashcard(){
-  if(!currentCapsule.flashcards || !currentCapsule.flashcards.length){
+  if(!currentCapsule.flashcards.length){
     flashcardDisplay.innerHTML = "<div class='alert alert-warning'>No flashcards available!</div>";
     return;
   }
@@ -84,7 +97,7 @@ function renderFlashcard(){
   const card = currentCapsule.flashcards[flashIndex];
   flashcardDisplay.innerHTML = showingFront
     ? `<strong>${escapeHTML(card.front)}</strong>`
-    : `<strong>${escapeHTML(card.back)}</strong>${card.explanation?`<br><em>${escapeHTML(card.explanation)}</em>`:""}`;
+    : `<strong>${escapeHTML(card.back)}</strong>${card.explanation ? `<br><em>${escapeHTML(card.explanation)}</em>` : ""}`;
 }
 
 // Flashcard navigation
@@ -97,7 +110,7 @@ nextCardBtn.onclick = ()=>{
 
 prevCardBtn.onclick = ()=>{
   if(!currentCapsule.flashcards.length) return;
-  flashIndex = (flashIndex-1+currentCapsule.flashcards.length)%currentCapsule.flashcards.length;
+  flashIndex = (flashIndex-1+currentCapsule.flashcards.length) % currentCapsule.flashcards.length;
   showingFront = true;
   renderFlashcard();
 };
@@ -109,88 +122,41 @@ flipCardBtn.onclick = ()=>{
 };
 
 // =====================
-// Quiz (✅ Fixed Answer Key + Colors)
+// Quiz
 // =====================
 function renderQuiz(){
-  quizContainer.innerHTML = "";
-  if(!currentCapsule.quiz || !currentCapsule.quiz.length){
+  if(!currentCapsule.quiz.length){
     quizContainer.innerHTML = "<p class='text-warning'>No quiz questions.</p>";
     return;
   }
 
-  // Take first 3 questions only
-  const questions = currentCapsule.quiz.slice(0,3);
-
-  questions.forEach((q,i)=>{
+  quizContainer.innerHTML = "";
+  currentCapsule.quiz.forEach((q, i)=>{
     const div = document.createElement("div");
-    div.className = "mb-3 card p-2 shadow-sm";
-    
-    const p = document.createElement("p");
-    p.innerHTML = `<strong>Q${i+1}: ${escapeHTML(q.question)}</strong>`;
-    div.appendChild(p);
-
-    const ul = document.createElement("ul");
-    ul.className = "list-group";
-
-    // ✅ Fixed key: works with 'answer' or 'correctIndex'
-    const correctIndex = (typeof q.correctIndex === "number") ? q.correctIndex : q.answer;
-
-    q.choices.forEach((choice,j)=>{
-      const li = document.createElement("li");
-      li.className = "list-group-item list-group-item-action";
-      li.textContent = choice;
-
-      li.addEventListener("click", ()=>{
-        Array.from(ul.children).forEach(c=>{
-          c.style.pointerEvents = "none";
-        });
-
-        if(j === correctIndex){
-          li.classList.add("list-group-item-success");
-        } else {
-          li.classList.add("list-group-item-danger");
-          if(ul.children[correctIndex])
-            ul.children[correctIndex].classList.add("list-group-item-success");
-        }
-      });
-
-      ul.appendChild(li);
-    });
-
-    div.appendChild(ul);
-
-    if(q.explanation){
-      const expl = document.createElement("p");
-      expl.innerHTML = `<em>${escapeHTML(q.explanation)}</em>`;
-      div.appendChild(expl);
-    }
-
+    div.className = "mb-3";
+    div.innerHTML = `
+      <p><strong>Q${i+1}: ${escapeHTML(q.question)}</strong></p>
+      <ul class="list-group">
+        ${q.choices.map((c,j)=>`<li class="list-group-item ${j===q.correctIndex?'list-group-item-success':''}">${escapeHTML(c)}</li>`).join("")}
+      </ul>
+      ${q.explanation ? `<p><em>${escapeHTML(q.explanation)}</em></p>` : ""}
+    `;
     quizContainer.appendChild(div);
   });
 }
 
 // =====================
-// Utility: Escape HTML
+// Helper
 // =====================
 function escapeHTML(str){
   if(!str) return "";
-  return str.replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+  return str.replace(/[&<>"']/g, function(m){
+    return {
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m];
+  });
 }
-
-// =====================
-// Initial Load
-// =====================
-document.addEventListener("DOMContentLoaded", ()=>{
-  if(capsules.length > 0){
-    const lastId = localStorage.getItem("pc_current_capsule");
-    if(lastId) currentCapsule = capsules.find(c=>c.id===lastId);
-    if(!currentCapsule) currentCapsule = capsules[0];
-  }
-
-  populateLearnSelector();
-  updateLearnMode();
-});
