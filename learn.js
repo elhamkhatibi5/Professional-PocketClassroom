@@ -1,35 +1,32 @@
 
 // ===============================
-// Pocket Classroom - Learn.js (Fixed & Ready)
+// Pocket Classroom - Learn.js (Fully Synced & Instant Feedback)
 // ===============================
-
 (() => {
-  // المان‌ها
-  const learnSelector_Learn = document.getElementById("learnSelector");
-  const notesList_Learn = document.getElementById("notesList");
-  const flashcardDisplay_Learn = document.getElementById("flashcardDisplay");
-  const prevCardBtn_Learn = document.getElementById("prevCardBtn");
-  const flipCardBtn_Learn = document.getElementById("flipCardBtn");
-  const nextCardBtn_Learn = document.getElementById("nextCardBtn");
-  const quizContainer_Learn = document.getElementById("quizContainer");
+  const learnSelector = document.getElementById("learnSelector");
+  const notesList = document.getElementById("notesList");
+  const flashcardDisplay = document.getElementById("flashcardDisplay");
+  const prevCardBtn = document.getElementById("prevCardBtn");
+  const flipCardBtn = document.getElementById("flipCardBtn");
+  const nextCardBtn = document.getElementById("nextCardBtn");
+  const quizContainer = document.getElementById("quizContainer");
 
-  // حالت‌ها
-  let currentCapsule_Learn = null;
-  let currentFlashcards = [];
-  let currentCardIndex = 0;
+  let currentCapsule = null;
+  let flashcards = [];
+  let cardIndex = 0;
 
   // ===============================
   // Load Capsules
   // ===============================
-  function loadCapsulesForLearning() {
+  function loadCapsules() {
     const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
-    learnSelector_Learn.innerHTML = "";
+    learnSelector.innerHTML = "";
 
     if(capsules.length === 0){
       const opt = document.createElement("option");
       opt.textContent = "No capsules available";
-      learnSelector_Learn.appendChild(opt);
-      disableLearnSections();
+      learnSelector.appendChild(opt);
+      disableLearn();
       return;
     }
 
@@ -37,152 +34,166 @@
       const opt = document.createElement("option");
       opt.value = i;
       opt.textContent = `${c.title} (${c.subject})`;
-      learnSelector_Learn.appendChild(opt);
+      learnSelector.appendChild(opt);
     });
 
-    currentCapsule_Learn = capsules[0];
-    displayLearnContent(currentCapsule_Learn);
+    const lastId = localStorage.getItem("pc_current_capsule");
+    currentCapsule = capsules.find(c=>c.id===lastId) || capsules[0];
+    learnSelector.value = capsules.indexOf(currentCapsule);
+    showContent();
   }
 
-  function disableLearnSections(){
-    notesList_Learn.innerHTML = "";
-    flashcardDisplay_Learn.textContent = "No content";
-    quizContainer_Learn.innerHTML = "<p class='text-muted'>No quiz available</p>";
+  function disableLearn(){
+    notesList.innerHTML = "";
+    flashcardDisplay.textContent = "No content";
+    quizContainer.innerHTML = "<p class='text-muted'>No quiz available</p>";
   }
 
   // ===============================
-  // Display Learn Content
+  // Display Content
   // ===============================
-  function displayLearnContent(capsule){
-    if(!capsule) return;
+  function showContent(){
+    if(!currentCapsule) return;
 
     // Notes
-    notesList_Learn.innerHTML = "";
-    if(capsule.notes && capsule.notes.length>0){
-      capsule.notes.forEach(n=>{
+    notesList.innerHTML = "";
+    if(currentCapsule.notes && currentCapsule.notes.length>0){
+      currentCapsule.notes.forEach(n=>{
         const li = document.createElement("li");
         li.className = "list-group-item";
         li.textContent = n;
-        notesList_Learn.appendChild(li);
+        notesList.appendChild(li);
       });
     } else {
-      notesList_Learn.innerHTML = "<li class='list-group-item text-muted'>No notes found</li>";
+      notesList.innerHTML = "<li class='list-group-item text-muted'>No notes found</li>";
     }
 
     // Flashcards
-    currentFlashcards = capsule.flashcards || [];
-    currentCardIndex = 0;
+    flashcards = currentCapsule.flashcards || [];
+    cardIndex = 0;
     showFlashcard();
 
     // Quiz
-    renderQuiz(capsule.quiz || []);
+    renderQuiz(currentCapsule.quiz || []);
   }
 
   function showFlashcard(){
-    if(currentFlashcards.length === 0){
-      flashcardDisplay_Learn.textContent = "No flashcards";
+    if(flashcards.length === 0){
+      flashcardDisplay.textContent = "No flashcards";
       return;
     }
-    const card = currentFlashcards[currentCardIndex];
-    flashcardDisplay_Learn.textContent = card.front;
-    flashcardDisplay_Learn.dataset.flipped = "false";
+    const card = flashcards[cardIndex];
+    flashcardDisplay.textContent = card.front;
+    flashcardDisplay.dataset.flipped = "false";
   }
 
   function flipFlashcard(){
-    if(currentFlashcards.length === 0) return;
-    const flipped = flashcardDisplay_Learn.dataset.flipped === "true";
-    flashcardDisplay_Learn.textContent = flipped
-      ? currentFlashcards[currentCardIndex].front
-      : currentFlashcards[currentCardIndex].back;
-    flashcardDisplay_Learn.dataset.flipped = (!flipped).toString();
+    if(flashcards.length === 0) return;
+    const flipped = flashcardDisplay.dataset.flipped === "true";
+    flashcardDisplay.textContent = flipped
+      ? flashcards[cardIndex].front
+      : flashcards[cardIndex].back;
+    flashcardDisplay.dataset.flipped = (!flipped).toString();
   }
 
-  prevCardBtn_Learn.addEventListener("click", ()=>{
-    if(currentFlashcards.length===0) return;
-    currentCardIndex = (currentCardIndex-1 + currentFlashcards.length) % currentFlashcards.length;
+  prevCardBtn.addEventListener("click", ()=>{
+    if(flashcards.length === 0) return;
+    cardIndex = (cardIndex-1 + flashcards.length) % flashcards.length;
     showFlashcard();
   });
 
-  nextCardBtn_Learn.addEventListener("click", ()=>{
-    if(currentFlashcards.length===0) return;
-    currentCardIndex = (currentCardIndex+1) % currentFlashcards.length;
+  nextCardBtn.addEventListener("click", ()=>{
+    if(flashcards.length === 0) return;
+    cardIndex = (cardIndex+1) % flashcards.length;
     showFlashcard();
   });
 
-  flipCardBtn_Learn.addEventListener("click", flipFlashcard);
-  flashcardDisplay_Learn.addEventListener("click", flipFlashcard);
+  flipCardBtn.addEventListener("click", flipFlashcard);
+  flashcardDisplay.addEventListener("click", flipFlashcard);
 
   // ===============================
-  // Quiz
+  // Quiz Rendering
   // ===============================
   function renderQuiz(quiz){
-    quizContainer_Learn.innerHTML = "";
+    quizContainer.innerHTML = "";
     if(!quiz || quiz.length===0){
-      quizContainer_Learn.innerHTML = "<p class='text-muted'>No quiz questions</p>";
+      quizContainer.innerHTML = "<p class='text-muted'>No quiz questions</p>";
       return;
     }
 
     quiz.forEach((q,i)=>{
-      const card = document.createElement("div");
-      card.className = "mb-3";
-      card.innerHTML = `
-        <p><strong>Q${i+1}:</strong> ${q.question}</p>
-        ${Array.isArray(q.choices) ? q.choices.map((opt,idx)=>`
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="q${i}" id="q${i}_opt${idx}" value="${opt}">
-            <label class="form-check-label" for="q${i}_opt${idx}">${opt}</label>
-          </div>
-        `).join("") : ''}
-      `;
-      quizContainer_Learn.appendChild(card);
-    });
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "mb-3";
+      cardDiv.innerHTML = `<p><strong>Q${i+1}:</strong> ${q.question}</p>`;
 
-    const checkBtn = document.createElement("button");
-    checkBtn.className = "btn btn-success";
-    checkBtn.textContent = "Check Answers";
-    checkBtn.addEventListener("click", ()=>checkAnswers(quiz));
-    quizContainer_Learn.appendChild(checkBtn);
-  }
+      q.choices.forEach((choice,idx)=>{
+        const choiceDiv = document.createElement("div");
+        choiceDiv.className = "form-check";
 
-  function checkAnswers(quiz){
-    let correct = 0;
-    quiz.forEach((q,i)=>{
-      const selected = document.querySelector(`input[name="q${i}"]:checked`);
-      if(selected && selected.value === q.answer) correct++;
+        const input = document.createElement("input");
+        input.className = "form-check-input";
+        input.type = "radio";
+        input.name = `q${i}`;
+        input.id = `q${i}_opt${idx}`;
+        input.value = choice;
+
+        const label = document.createElement("label");
+        label.className = "form-check-label";
+        label.htmlFor = input.id;
+        label.textContent = choice;
+
+        choiceDiv.appendChild(input);
+        choiceDiv.appendChild(label);
+        cardDiv.appendChild(choiceDiv);
+
+        // فوراً رنگ‌بندی پاسخ
+        input.addEventListener("change", ()=>{
+          if(idx === q.correctIndex){
+            label.style.color = "green";
+          } else {
+            label.style.color = "red";
+            // نمایش پاسخ درست
+            const correctLabel = document.getElementById(`q${i}_opt${q.correctIndex}`).nextSibling;
+            if(correctLabel) correctLabel.style.color = "green";
+          }
+        });
+      });
+
+      quizContainer.appendChild(cardDiv);
     });
-    alert(`You got ${correct} of ${quiz.length} correct!`);
   }
 
   // ===============================
   // Learn Selector
   // ===============================
-  learnSelector_Learn.addEventListener("change", ()=>{
+  learnSelector.addEventListener("change", ()=>{
     const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
-    currentCapsule_Learn = capsules[Number(learnSelector_Learn.value)];
-    displayLearnContent(currentCapsule_Learn);
+    currentCapsule = capsules[Number(learnSelector.value)];
+    localStorage.setItem("pc_current_capsule", currentCapsule.id);
+    showContent();
   });
 
   // ===============================
-  // For Main.js compatibility
+  // For Main.js Compatibility
   // ===============================
   window.populateLearnSelector = function(){
     const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
-    learnSelector_Learn.innerHTML = "";
+    learnSelector.innerHTML = "";
     capsules.forEach((c,i)=>{
       const opt = document.createElement("option");
       opt.value = i;
       opt.textContent = `${c.title} (${c.subject})`;
-      learnSelector_Learn.appendChild(opt);
+      learnSelector.appendChild(opt);
     });
+
+    // هماهنگ شدن با currentCapsule
+    if(currentCapsule){
+      const index = capsules.indexOf(currentCapsule);
+      if(index>=0) learnSelector.value = index;
+    }
   };
 
-  window.updateLearnMode = function(){
-    const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
-    const index = Number(learnSelector_Learn.value) || 0;
-    currentCapsule_Learn = capsules[index];
-    displayLearnContent(currentCapsule_Learn);
-  };
+  window.updateLearnMode = showContent;
 
-  document.addEventListener("DOMContentLoaded", loadCapsulesForLearning);
-
+  document.addEventListener("DOMContentLoaded", loadCapsules);
 })();
