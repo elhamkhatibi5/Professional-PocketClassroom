@@ -1,6 +1,6 @@
 
 // ===============================
-// Pocket Classroom - Learn.js (Fixed & Ready)
+// Pocket Classroom - Learn.js (Final)
 // ===============================
 
 (() => {
@@ -78,6 +78,9 @@
     renderQuiz(capsule.quiz || []);
   }
 
+  // ===============================
+  // Flashcards
+  // ===============================
   function showFlashcard(){
     if(currentFlashcards.length === 0){
       flashcardDisplay_Learn.textContent = "No flashcards";
@@ -122,14 +125,23 @@
       return;
     }
 
-    quiz.forEach((q,i)=>{
+    // حداقل ۴ سوال نمایش داده شود
+    const displayQuiz = [];
+    while(displayQuiz.length < 4){
+      for(let q of quiz){
+        if(displayQuiz.length < 4) displayQuiz.push(q);
+        else break;
+      }
+    }
+
+    displayQuiz.forEach((q,i)=>{
       const card = document.createElement("div");
-      card.className = "mb-3";
+      card.className = "mb-3 p-2 border rounded";
       card.innerHTML = `
         <p><strong>Q${i+1}:</strong> ${q.question}</p>
         ${Array.isArray(q.choices) ? q.choices.map((opt,idx)=>`
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="q${i}" id="q${i}_opt${idx}" value="${opt}">
+            <input class="form-check-input" type="radio" name="q${i}" id="q${i}_opt${idx}" value="${idx}">
             <label class="form-check-label" for="q${i}_opt${idx}">${opt}</label>
           </div>
         `).join("") : ''}
@@ -138,19 +150,34 @@
     });
 
     const checkBtn = document.createElement("button");
-    checkBtn.className = "btn btn-success";
+    checkBtn.className = "btn btn-success mt-2";
     checkBtn.textContent = "Check Answers";
-    checkBtn.addEventListener("click", ()=>checkAnswers(quiz));
+    checkBtn.addEventListener("click", ()=>{
+      checkAnswers(displayQuiz);
+    });
     quizContainer_Learn.appendChild(checkBtn);
   }
 
   function checkAnswers(quiz){
-    let correct = 0;
     quiz.forEach((q,i)=>{
-      const selected = document.querySelector(`input[name="q${i}"]:checked`);
-      if(selected && selected.value === q.answer) correct++;
+      const options = document.getElementsByName(`q${i}`);
+      options.forEach(opt=>{
+        const label = document.querySelector(`label[for="${opt.id}"]`);
+        if(Number(opt.value) === q.correctIndex){
+          // جواب درست سبز
+          label.style.backgroundColor = "#d4edda";
+          label.style.color = "#155724";
+        } else if(opt.checked && Number(opt.value) !== q.correctIndex){
+          // جواب اشتباه قرمز
+          label.style.backgroundColor = "#f8d7da";
+          label.style.color = "#721c24";
+        } else {
+          // بقیه بدون رنگ
+          label.style.backgroundColor = "";
+          label.style.color = "";
+        }
+      });
     });
-    alert(`You got ${correct} of ${quiz.length} correct!`);
   }
 
   // ===============================
@@ -163,7 +190,7 @@
   });
 
   // ===============================
-  // For Main.js compatibility
+  // Compatibility with main.js
   // ===============================
   window.populateLearnSelector = function(){
     const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
