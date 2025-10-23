@@ -3,85 +3,108 @@
 Base Theme
 ============================= */
 body.light-mode {
-background-color: #f8f9fa;
-color: #212529;
+  background-color: #f8f9fa;
+  color: #212529;
 }
 
 body.dark-mode {
-background-color: #121212;
-color: #f1f1f1;
+  background-color: #121212;
+  color: #f1f1f1;
 }
 
 /* =============================
 Navbar
 ============================= */
 .navbar .nav-link {
-cursor: pointer;
-transition: color 0.2s;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 .navbar .nav-link:hover {
-color: #ffc107;
+  color: #ffc107;
 }
 
 /* =============================
 Capsule Cards
 ============================= */
 .capsule-card {
-transition: transform 0.2s, box-shadow 0.2s;
-cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 .capsule-card:hover {
-transform: translateY(-3px);
-box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* =============================
+Buttons: Learn / Edit / Delete
+============================= */
+.capsule-card .learnBtn {
+  background-color: #0d6efd; /* آبی */
+  color: #fff;
+}
+.capsule-card .learnBtn:hover {
+  background-color: #0b5ed7;
+}
+
+.capsule-card .editBtn {
+  background-color: #198754; /* سبز */
+  color: #fff;
+}
+.capsule-card .editBtn:hover {
+  background-color: #157347;
+}
+
+.capsule-card .delBtn {
+  background-color: #dc3545; /* قرمز */
+  color: #fff;
+}
+.capsule-card .delBtn:hover {
+  background-color: #c82333;
 }
 
 /* =============================
 Flashcards
 ============================= */
 .flashcard {
-border: 1px solid #ccc;
-border-radius: 0.5rem;
-padding: 2rem;
-cursor: pointer;
-min-width: 200px;
-min-height: 100px;
-user-select: none;
-background-color: #fff;
-color: #000;
-transition: background-color 0.3s, color 0.3s, transform 0.3s;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  cursor: pointer;
+  min-width: 200px;
+  min-height: 100px;
+  user-select: none;
+  background-color: #fff;
+  color: #000;
+  transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
 .flashcard:hover {
-transform: scale(1.03);
+  transform: scale(1.03);
 }
 
 body.dark-mode .flashcard {
-background-color: #1e1e1e;
-color: #f1f1f1;
+  background-color: #1e1e1e;
+  color: #f1f1f1;
 }
 
 /* =============================
-Inputs
+Inputs / Notes / Quiz
 ============================= */
 .list-group-item input {
-margin-bottom: 0.3rem;
+  margin-bottom: 0.3rem;
 }
-
-/* =============================
-Buttons
-============================= */
-button {
-transition: transform 0.1s;
-}
-button:active {
-transform: scale(0.97);
-}
-
-/* =============================
-Notes / Quiz List
-============================= */
 #notesList li {
-margin-bottom: 0.3rem;
+  margin-bottom: 0.3rem;
 }
 #quizContainer button {
-width: 100%;
-} 
+  width: 100%;
+}
+
+/* =============================
+Generic Buttons
+============================= */
+button {
+  transition: transform 0.1s;
+}
+button:active {
+  transform: scale(0.97);
+}
