@@ -20,7 +20,4 @@ It combines Notes, Flashcards, and Quizzes in one platform to enhance your learn
 4. Ancient Civilizations (History)  
 
 ## Usage
-
-1. Clone or download the repository:  
-```bash
-
+[Clone this repository](https://github.com/elhamkhatibi5/Professional-PocketClassroom)
