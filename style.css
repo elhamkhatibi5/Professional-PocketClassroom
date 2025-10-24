@@ -8,25 +8,26 @@ body.light-mode {
 }
 
 body.dark-mode {
-  background: linear-gradient(135deg, #0f172a, #1e293b, #334155); /* آبی تیره مدرن */
-  color: #f8fafc; /* سفید خیلی روشن */
+  background: linear-gradient(135deg, #111827, #1e293b, #273449); /* آبی تیره ملایم */
+  color: #f9fafb; /* سفید خوانا */
 }
 
 /* =============================
 Navbar
 ============================= */
 .navbar {
-  background: linear-gradient(135deg, #3b82f6, #6366f1); /* آبی تا بنفش حرفه‌ای */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #2563eb, #7c3aed); /* آبی تا بنفش مدرن */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
 .navbar .nav-link {
   cursor: pointer;
   transition: color 0.2s, text-shadow 0.2s;
   color: #ffffff;
+  font-weight: 500;
 }
 .navbar .nav-link:hover {
-  color: #fde68a; /* طلایی ملایم */
-  text-shadow: 0 0 6px rgba(253, 230, 138, 0.7);
+  color: #fcd34d; /* طلایی گرم */
+  text-shadow: 0 0 8px rgba(252, 211, 77, 0.7);
 }
 
 /* =============================
@@ -46,34 +47,42 @@ Capsule Cards
 }
 
 body.dark-mode .capsule-card {
-  background: linear-gradient(145deg, #1e293b, #334155); /* آبی تیره زیبا */
-  color: #f1f5f9; /* روشن‌تر برای خوانایی */
+  background: linear-gradient(160deg, #1e293b, #2c3e50); /* کمی روشن‌تر برای تضاد */
+  color: #f9fafb; /* متن سفید */
   border: 1px solid #475569;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+}
+body.dark-mode .capsule-card p,
+body.dark-mode .capsule-card li,
+body.dark-mode .capsule-card h5 {
+  color: #f9fafb !important;
 }
 
 /* =============================
 Buttons: Learn / Edit / Delete
 ============================= */
 .capsule-card .learnBtn {
-  background: linear-gradient(135deg, #60a5fa, #4f46e5); /* آبی بنفش */
+  background: linear-gradient(135deg, #60a5fa, #4f46e5);
   color: #fff;
+  border: none;
 }
 .capsule-card .learnBtn:hover {
   background: linear-gradient(135deg, #3b82f6, #4338ca);
 }
 
 .capsule-card .editBtn {
-  background: linear-gradient(135deg, #22c55e, #16a34a); /* سبز ملایم */
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #fff;
+  border: none;
 }
 .capsule-card .editBtn:hover {
   background: linear-gradient(135deg, #15803d, #16a34a);
 }
 
 .capsule-card .delBtn {
-  background: linear-gradient(135deg, #ef4444, #dc2626); /* قرمز */
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #fff;
+  border: none;
 }
 .capsule-card .delBtn:hover {
   background: linear-gradient(135deg, #b91c1c, #dc2626);
@@ -90,7 +99,7 @@ Flashcards
   min-width: 200px;
   min-height: 100px;
   user-select: none;
-  background: linear-gradient(145deg, #fefefe, #f3f7fb);
+  background: linear-gradient(145deg, #ffffff, #f3f7fb);
   color: #000;
   transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
@@ -100,9 +109,10 @@ Flashcards
 }
 
 body.dark-mode .flashcard {
-  background: linear-gradient(145deg, #1e293b, #334155);
-  color: #f8fafc; /* سفید نرم برای خوانایی بالا */
-  border: 1px solid #475569;
+  background: linear-gradient(160deg, #2a3444, #3b4b5f);
+  color: #ffffff; /* سفید کامل برای خوانایی */
+  border: 1px solid #52647a;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
 }
 
 /* =============================
@@ -113,6 +123,9 @@ Inputs / Notes / Quiz
 }
 #notesList li {
   margin-bottom: 0.3rem;
+}
+body.dark-mode #notesList li {
+  color: #f8fafc;
 }
 #quizContainer button {
   width: 100%;
