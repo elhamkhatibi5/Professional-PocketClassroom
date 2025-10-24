@@ -19,5 +19,4 @@ It combines Notes, Flashcards, and Quizzes in one platform to enhance your learn
 3. Python Programming (Programming)  
 4. Ancient Civilizations (History)  
 
-## Usage
-[Clone this repository](https://github.com/elhamkhatibi5/Professional-PocketClassroom)
+
