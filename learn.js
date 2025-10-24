@@ -1,10 +1,10 @@
 
 // ===============================
-// Pocket Classroom - Learn.js (Fixed Full Sync with Library + Correct/Wrong Quiz)
+// Pocket Classroom - Learn.js (Fixed Full Sync with Library + Correct/Wrong Quiz ✅)
 // ===============================
 (() => {
   const learnSelector = document.getElementById("learnSelector");
-  const learnTitle = document.getElementById("learnTitle"); // اضافه شد برای هماهنگی عنوان
+  const learnTitle = document.getElementById("learnTitle");
   const notesList = document.getElementById("notesList");
   const flashcardDisplay = document.getElementById("flashcardDisplay");
   const prevCardBtn = document.getElementById("prevCardBtn");
@@ -33,7 +33,7 @@
 
     capsules.forEach((c, i) => {
       const opt = document.createElement("option");
-      opt.value = c.id; // استفاده از id به جای index
+      opt.value = c.id;
       opt.textContent = c.title;
       learnSelector.appendChild(opt);
     });
@@ -45,7 +45,7 @@
   }
 
   function disableLearn() {
-    if(learnTitle) learnTitle.textContent = "Learn Mode";
+    if (learnTitle) learnTitle.textContent = "Learn Mode";
     notesList.innerHTML = "";
     flashcardDisplay.textContent = "No content";
     quizContainer.innerHTML = "<p class='text-muted'>No quiz available</p>";
@@ -57,8 +57,7 @@
   function showContent() {
     if (!currentCapsule) return;
 
-    // عنوان کپسول
-    if(learnTitle) learnTitle.textContent = currentCapsule.title;
+    if (learnTitle) learnTitle.textContent = currentCapsule.title;
 
     // Notes
     notesList.innerHTML = "";
@@ -117,7 +116,7 @@
   flashcardDisplay.addEventListener("click", flipFlashcard);
 
   // ===============================
-  // Quiz Rendering (Correct/Wrong Indicator)
+  // ✅ Fixed Quiz Rendering (Correct/Wrong Indicator)
   // ===============================
   function renderQuiz(quiz) {
     quizContainer.innerHTML = "";
@@ -127,6 +126,8 @@
     }
 
     quiz.forEach((q, i) => {
+      if (!q || !q.question || !Array.isArray(q.choices) || q.choices.length === 0) return;
+
       const cardDiv = document.createElement("div");
       cardDiv.className = "mb-3";
       cardDiv.innerHTML = `<p><strong>Q${i + 1}:</strong> ${q.question}</p>`;
@@ -152,14 +153,21 @@
         cardDiv.appendChild(choiceDiv);
 
         input.addEventListener("change", () => {
-          // ریست همه گزینه‌ها
+          // reset all options
           q.choices.forEach((_, j) => {
-            const lbl = document.getElementById(`q${i}_opt${j}`).nextSibling;
-            if(lbl) {
+            const lbl = document.querySelector(`label[for="q${i}_opt${j}"]`);
+            if (lbl) {
               lbl.style.color = "";
               lbl.textContent = q.choices[j];
             }
           });
+
+          // validate correctIndex
+          if (typeof q.correctIndex !== "number" || q.correctIndex < 0 || q.correctIndex >= q.choices.length) {
+            label.style.color = "orange";
+            label.textContent = choice + " ⚠️ No valid correct answer";
+            return;
+          }
 
           if (idx === q.correctIndex) {
             label.style.color = "green";
@@ -167,8 +175,8 @@
           } else {
             label.style.color = "red";
             label.textContent = choice + " ❌ Wrong";
-            const correctLabel = document.getElementById(`q${i}_opt${q.correctIndex}`).nextSibling;
-            if(correctLabel) {
+            const correctLabel = document.querySelector(`label[for="q${i}_opt${q.correctIndex}"]`);
+            if (correctLabel) {
               correctLabel.style.color = "green";
               correctLabel.textContent = q.choices[q.correctIndex] + " ✅ Correct";
             }
@@ -187,7 +195,7 @@
     const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
     const selectedId = learnSelector.value;
     currentCapsule = capsules.find(c => c.id === selectedId);
-    if(currentCapsule) {
+    if (currentCapsule) {
       localStorage.setItem("pc_current_capsule", currentCapsule.id);
       showContent();
     }
@@ -205,7 +213,6 @@
       opt.textContent = c.title;
       learnSelector.appendChild(opt);
     });
-
     if (currentCapsule) learnSelector.value = currentCapsule.id;
   };
 
