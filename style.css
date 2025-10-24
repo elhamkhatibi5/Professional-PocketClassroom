@@ -3,31 +3,32 @@
 Base Theme
 ============================= */
 body.light-mode {
-  background: linear-gradient(135deg, #e3f2fd, #f3e5f5); /* آبی و یاسی ملایم */
-  color: #1a1a1a;
+  background: linear-gradient(135deg, #dff1ff, #b9fbc0); /* آبی ملایم → سبز روشن */
+  color: #1c1c1c;
 }
 
 body.dark-mode {
-  background: linear-gradient(135deg, #111827, #1e293b, #273449); /* آبی تیره ملایم */
-  color: #f9fafb; /* سفید خوانا */
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* گرادیان آبی تیره حرفه‌ای */
+  color: #f1f1f1;
 }
 
 /* =============================
 Navbar
 ============================= */
 .navbar {
-  background: linear-gradient(135deg, #2563eb, #7c3aed); /* آبی تا بنفش مدرن */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  background: linear-gradient(135deg, #0093E9, #80D0C7); /* آبی فیروزه‌ای */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
+
 .navbar .nav-link {
   cursor: pointer;
-  transition: color 0.2s, text-shadow 0.2s;
-  color: #ffffff;
-  font-weight: 500;
+  transition: color 0.2s;
+  color: #fff;
 }
+
 .navbar .nav-link:hover {
-  color: #fcd34d; /* طلایی گرم */
-  text-shadow: 0 0 8px rgba(252, 211, 77, 0.7);
+  color: #ffef9f;
+  text-shadow: 0 0 6px rgba(255,255,255,0.5);
 }
 
 /* =============================
@@ -36,83 +37,73 @@ Capsule Cards
 .capsule-card {
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
-  background: linear-gradient(145deg, #ffffff, #f3f7fa);
-  border: 1px solid #d1d9e6;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, #ffffff, #e8f8f5);
+  color: #1c1c1c;
+  border-radius: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
+
 .capsule-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 body.dark-mode .capsule-card {
-  background: linear-gradient(160deg, #1e293b, #2c3e50); /* کمی روشن‌تر برای تضاد */
-  color: #f9fafb; /* متن سفید */
-  border: 1px solid #475569;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
-}
-body.dark-mode .capsule-card p,
-body.dark-mode .capsule-card li,
-body.dark-mode .capsule-card h5 {
-  color: #f9fafb !important;
+  background: linear-gradient(135deg, #1c1f26, #2a2f38);
+  color: #f5f5f5;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
 }
 
 /* =============================
 Buttons: Learn / Edit / Delete
 ============================= */
 .capsule-card .learnBtn {
-  background: linear-gradient(135deg, #60a5fa, #4f46e5);
+  background-color: #0d6efd;
   color: #fff;
-  border: none;
 }
 .capsule-card .learnBtn:hover {
-  background: linear-gradient(135deg, #3b82f6, #4338ca);
+  background-color: #0b5ed7;
 }
 
 .capsule-card .editBtn {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background-color: #198754;
   color: #fff;
-  border: none;
 }
 .capsule-card .editBtn:hover {
-  background: linear-gradient(135deg, #15803d, #16a34a);
+  background-color: #157347;
 }
 
 .capsule-card .delBtn {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background-color: #dc3545;
   color: #fff;
-  border: none;
 }
 .capsule-card .delBtn:hover {
-  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  background-color: #c82333;
 }
 
 /* =============================
 Flashcards
 ============================= */
 .flashcard {
-  border: 1px solid #cfd8dc;
-  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
   padding: 2rem;
   cursor: pointer;
   min-width: 200px;
   min-height: 100px;
   user-select: none;
-  background: linear-gradient(145deg, #ffffff, #f3f7fb);
+  background: linear-gradient(135deg, #ffffff, #f7faff);
   color: #000;
   transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
 .flashcard:hover {
   transform: scale(1.03);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 body.dark-mode .flashcard {
-  background: linear-gradient(160deg, #2a3444, #3b4b5f);
-  color: #ffffff; /* سفید کامل برای خوانایی */
-  border: 1px solid #52647a;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  background: linear-gradient(135deg, #1e1e1e, #2b2b2b);
+  color: #f8f9fa;
+  border: 1px solid #3a3a3a;
 }
 
 /* =============================
@@ -124,20 +115,28 @@ Inputs / Notes / Quiz
 #notesList li {
   margin-bottom: 0.3rem;
 }
-body.dark-mode #notesList li {
-  color: #f8fafc;
-}
 #quizContainer button {
   width: 100%;
-  background: linear-gradient(135deg, #60a5fa, #4f46e5);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  transition: transform 0.2s, box-shadow 0.2s;
 }
-#quizContainer button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+
+/* =============================
+Notes Fix (Visibility in Dark Mode)
+============================= */
+#notesList,
+#notesList li,
+#notesList p,
+#notesList span,
+#notesList div {
+  color: #1a1a1a;
+}
+
+body.dark-mode #notesList,
+body.dark-mode #notesList li,
+body.dark-mode #notesList p,
+body.dark-mode #notesList span,
+body.dark-mode #notesList div {
+  color: #f8f9fa !important;
+  background: transparent !important;
 }
 
 /* =============================
@@ -145,6 +144,7 @@ Generic Buttons
 ============================= */
 button {
   transition: transform 0.1s;
+  border-radius: 0.5rem;
 }
 button:active {
   transform: scale(0.97);
