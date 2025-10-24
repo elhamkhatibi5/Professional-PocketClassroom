@@ -1,159 +1,220 @@
 
-/* =============================
-Base Theme with Gradient Background
-============================= */
-body.light-mode {
-  background: linear-gradient(135deg, #f0f4ff, #d9e4ff); /* آبی ملایم گرادیان */
-  color: #1c1c1c;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background 0.5s, color 0.5s;
-}
+// ===============================
+// Pocket Classroom - Learn.js (Fixed Full Sync with Library + Correct/Wrong Quiz)
+// ===============================
+(() => {
+  const learnSelector = document.getElementById("learnSelector");
+  const learnTitle = document.getElementById("learnTitle"); // اضافه شد برای هماهنگی عنوان
+  const notesList = document.getElementById("notesList");
+  const flashcardDisplay = document.getElementById("flashcardDisplay");
+  const prevCardBtn = document.getElementById("prevCardBtn");
+  const flipCardBtn = document.getElementById("flipCardBtn");
+  const nextCardBtn = document.getElementById("nextCardBtn");
+  const quizContainer = document.getElementById("quizContainer");
 
-body.dark-mode {
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* گرادیان تاریک حرفه‌ای */
-  color: #e6e6e6;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background 0.5s, color 0.5s;
-}
+  let currentCapsule = null;
+  let flashcards = [];
+  let cardIndex = 0;
 
-/* =============================
-Navbar with Gradient
-============================= */
-.navbar {
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  transition: background 0.5s;
-}
+  // ===============================
+  // Load Capsules
+  // ===============================
+  function loadCapsules() {
+    const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
+    learnSelector.innerHTML = "";
 
-.navbar .nav-link {
-  cursor: pointer;
-  transition: color 0.2s, text-shadow 0.2s;
-  color: #fff;
-  font-weight: 500;
-}
+    if (capsules.length === 0) {
+      const opt = document.createElement("option");
+      opt.textContent = "No capsules available";
+      learnSelector.appendChild(opt);
+      disableLearn();
+      return;
+    }
 
-.navbar .nav-link:hover {
-  color: #ffd369;
-  text-shadow: 0 0 6px rgba(255,211,105,0.7);
-}
+    capsules.forEach((c, i) => {
+      const opt = document.createElement("option");
+      opt.value = c.id; // استفاده از id به جای index
+      opt.textContent = c.title;
+      learnSelector.appendChild(opt);
+    });
 
-/* =============================
-Capsule Cards
-============================= */
-.capsule-card {
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  background: linear-gradient(145deg, #ffffff, #e6f0ff);
-  border: 1px solid #d1d9e6;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-.capsule-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-}
+    const lastId = localStorage.getItem("pc_current_capsule");
+    currentCapsule = capsules.find(c => c.id === lastId) || capsules[0];
+    learnSelector.value = currentCapsule.id;
+    showContent();
+  }
 
-body.dark-mode .capsule-card {
-  background: linear-gradient(145deg, #1e1e2f, #2c2c48);
-  color: #f1f1f1;
-  border: 1px solid #44475a;
-  box-shadow: 0 4px 15px rgba(255,255,255,0.05);
-}
+  function disableLearn() {
+    if(learnTitle) learnTitle.textContent = "Learn Mode";
+    notesList.innerHTML = "";
+    flashcardDisplay.textContent = "No content";
+    quizContainer.innerHTML = "<p class='text-muted'>No quiz available</p>";
+  }
 
-/* =============================
-Buttons: Learn / Edit / Delete
-============================= */
-.capsule-card .learnBtn {
-  background: linear-gradient(135deg, #3d8bfd, #4361ee);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  transition: background 0.3s;
-}
-.capsule-card .learnBtn:hover {
-  background: linear-gradient(135deg, #2a7af1, #3a4fe0);
-}
+  // ===============================
+  // Display Content
+  // ===============================
+  function showContent() {
+    if (!currentCapsule) return;
 
-.capsule-card .editBtn {
-  background: linear-gradient(135deg, #00b894, #00cec9);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-}
-.capsule-card .editBtn:hover {
-  background: linear-gradient(135deg, #00a387, #00b1b1);
-}
+    // عنوان کپسول
+    if(learnTitle) learnTitle.textContent = currentCapsule.title;
 
-.capsule-card .delBtn {
-  background: linear-gradient(135deg, #ff4b5c, #c9184a);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-}
-.capsule-card .delBtn:hover {
-  background: linear-gradient(135deg, #e63946, #a4161a);
-}
+    // Notes
+    notesList.innerHTML = "";
+    if (currentCapsule.notes && currentCapsule.notes.length > 0) {
+      currentCapsule.notes.forEach(n => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.textContent = n;
+        notesList.appendChild(li);
+      });
+    } else {
+      notesList.innerHTML = "<li class='list-group-item text-muted'>No notes found</li>";
+    }
 
-/* =============================
-Flashcards
-============================= */
-.flashcard {
-  border-radius: 0.75rem;
-  padding: 2rem;
-  cursor: pointer;
-  min-width: 200px;
-  min-height: 120px;
-  user-select: none;
-  background: linear-gradient(145deg, #ffffff, #e6f0ff);
-  color: #1a1a1a;
-  border: 1px solid #d1d9e6;
-  transition: transform 0.3s, box-shadow 0.3s, background 0.5s, color 0.5s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.flashcard:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-}
+    // Flashcards
+    flashcards = currentCapsule.flashcards || [];
+    cardIndex = 0;
+    showFlashcard();
 
-body.dark-mode .flashcard {
-  background: linear-gradient(145deg, #1e1e2f, #2c2c48);
-  color: #f1f1f1;
-  border: 1px solid #44475a;
-  box-shadow: 0 4px 12px rgba(255,255,255,0.05);
-}
+    // Quiz
+    renderQuiz(currentCapsule.quiz || []);
+  }
 
-/* =============================
-Inputs / Notes / Quiz
-============================= */
-.list-group-item input {
-  margin-bottom: 0.3rem;
-}
+  function showFlashcard() {
+    if (flashcards.length === 0) {
+      flashcardDisplay.textContent = "No flashcards";
+      return;
+    }
+    const card = flashcards[cardIndex];
+    flashcardDisplay.textContent = card.front;
+    flashcardDisplay.dataset.flipped = "false";
+  }
 
-#notesList li {
-  margin-bottom: 0.3rem;
-}
+  function flipFlashcard() {
+    if (flashcards.length === 0) return;
+    const flipped = flashcardDisplay.dataset.flipped === "true";
+    flashcardDisplay.textContent = flipped
+      ? flashcards[cardIndex].front
+      : flashcards[cardIndex].back;
+    flashcardDisplay.dataset.flipped = (!flipped).toString();
+  }
 
-#quizContainer button {
-  width: 100%;
-  background: linear-gradient(135deg, #5a67d8, #6b46c1);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  transition: background 0.3s;
-}
-#quizContainer button:hover {
-  background: linear-gradient(135deg, #4c51bf, #553c9a);
-}
+  prevCardBtn.addEventListener("click", () => {
+    if (flashcards.length === 0) return;
+    cardIndex = (cardIndex - 1 + flashcards.length) % flashcards.length;
+    showFlashcard();
+  });
 
-/* =============================
-Generic Buttons
-============================= */
-button {
-  transition: transform 0.1s, box-shadow 0.2s;
-  border-radius: 6px;
-}
-button:active {
-  transform: scale(0.97);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2) inset;
-}
+  nextCardBtn.addEventListener("click", () => {
+    if (flashcards.length === 0) return;
+    cardIndex = (cardIndex + 1) % flashcards.length;
+    showFlashcard();
+  });
+
+  flipCardBtn.addEventListener("click", flipFlashcard);
+  flashcardDisplay.addEventListener("click", flipFlashcard);
+
+  // ===============================
+  // Quiz Rendering (Correct/Wrong Indicator)
+  // ===============================
+  function renderQuiz(quiz) {
+    quizContainer.innerHTML = "";
+    if (!quiz || quiz.length === 0) {
+      quizContainer.innerHTML = "<p class='text-muted'>No quiz questions</p>";
+      return;
+    }
+
+    quiz.forEach((q, i) => {
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "mb-3";
+      cardDiv.innerHTML = `<p><strong>Q${i + 1}:</strong> ${q.question}</p>`;
+
+      q.choices.forEach((choice, idx) => {
+        const choiceDiv = document.createElement("div");
+        choiceDiv.className = "form-check";
+
+        const input = document.createElement("input");
+        input.className = "form-check-input";
+        input.type = "radio";
+        input.name = `q${i}`;
+        input.id = `q${i}_opt${idx}`;
+        input.value = choice;
+
+        const label = document.createElement("label");
+        label.className = "form-check-label";
+        label.htmlFor = input.id;
+        label.textContent = choice;
+
+        choiceDiv.appendChild(input);
+        choiceDiv.appendChild(label);
+        cardDiv.appendChild(choiceDiv);
+
+        input.addEventListener("change", () => {
+          // ریست همه گزینه‌ها
+          q.choices.forEach((_, j) => {
+            const lbl = document.getElementById(`q${i}_opt${j}`).nextSibling;
+            if(lbl) {
+              lbl.style.color = "";
+              lbl.textContent = q.choices[j];
+            }
+          });
+
+          if (idx === q.correctIndex) {
+            label.style.color = "green";
+            label.textContent = choice + " ✅ Correct";
+          } else {
+            label.style.color = "red";
+            label.textContent = choice + " ❌ Wrong";
+            const correctLabel = document.getElementById(`q${i}_opt${q.correctIndex}`).nextSibling;
+            if(correctLabel) {
+              correctLabel.style.color = "green";
+              correctLabel.textContent = q.choices[q.correctIndex] + " ✅ Correct";
+            }
+          }
+        });
+      });
+
+      quizContainer.appendChild(cardDiv);
+    });
+  }
+
+  // ===============================
+  // Learn Selector
+  // ===============================
+  learnSelector.addEventListener("change", () => {
+    const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
+    const selectedId = learnSelector.value;
+    currentCapsule = capsules.find(c => c.id === selectedId);
+    if(currentCapsule) {
+      localStorage.setItem("pc_current_capsule", currentCapsule.id);
+      showContent();
+    }
+  });
+
+  // ===============================
+  // For Main.js Compatibility
+  // ===============================
+  window.populateLearnSelector = function () {
+    const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
+    learnSelector.innerHTML = "";
+    capsules.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.title;
+      learnSelector.appendChild(opt);
+    });
+
+    if (currentCapsule) learnSelector.value = currentCapsule.id;
+  };
+
+  window.updateLearnMode = function () {
+    const capsules = JSON.parse(localStorage.getItem("pc_capsules_index") || "[]");
+    const lastId = localStorage.getItem("pc_current_capsule");
+    currentCapsule = capsules.find(c => c.id === lastId) || capsules[0];
+    showContent();
+  };
+
+  document.addEventListener("DOMContentLoaded", loadCapsules);
+})();
